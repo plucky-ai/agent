@@ -1,9 +1,11 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "sourceMap": false,
-    "removeComments": true
+    "module": "node16",
+    "outDir": "./dist/esm"
   },
+  "sourceMap": false,
+  "removeComments": true,
   "include": ["src"],
   "exclude": ["**/*.test.ts", "**/*.spec.ts"]
 }

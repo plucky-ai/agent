@@ -43,7 +43,7 @@ export class AWSAnthropic extends BaseProvider {
       inputs: args,
     });
     const getAnthropicMessage = useCacheIfPresent<
-      (args: typeof this.anthropic.messages.create) => Promise<OutputMessage>
+      (args: MessageCreateParams) => Promise<OutputMessage>
     >(this.anthropic.messages.create.bind(this.anthropic.messages), this.cache);
     const response = await getAnthropicMessage(args);
     generation.end({
