@@ -1,6 +1,6 @@
 {
-  "name": "plucky-agent",
-  "version": "0.0.0",
+  "name": "@plucky-ai/agent",
+  "version": "0.0.1-alpha.1",
   "description": "Plucky's AI agentic framework.",
   "type": "module",
   "engines": {
@@ -42,7 +42,8 @@
     "test:coverage": "vitest run unit --config __tests__/vitest.config.ts --coverage.enabled --coverage.all",
     "prettier": "prettier \"{src,__{tests}__}/**/*.{ts,mts}\" --config .prettierrc --write",
     "prettier:check": "prettier \"{src,__{tests}__}/**/*.{ts,mts}\" --config .prettierrc --check",
-    "test:watch": "vitest unit"
+    "test:watch": "vitest unit",
+    "publish-package": "NPM_TOKEN=$NPM_TOKEN bin/publish-npm"
   },
   "author": "Ryan Villanueva",
   "license": "MIT",
