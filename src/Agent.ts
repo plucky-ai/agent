@@ -96,7 +96,7 @@ export class Agent {
     });
     if (jsonSchema) {
       return this.getValidatedJsonResponse({
-        messages: outputMessages,
+        messages: messages.concat(outputMessages),
         jsonSchema,
         model: options.model,
         observation: trace,
