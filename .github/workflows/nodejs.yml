@@ -5,7 +5,8 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    env:
+      ENV: ci
     steps:
       - uses: actions/checkout@v4
       - uses: volta-cli/action@v4

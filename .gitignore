@@ -11,7 +11,7 @@ coverage
 
 # Transpiled files
 build/
-
+dist/
 # VS Code
 .vscode
 !.vscode/tasks.js
@@ -32,6 +32,8 @@ build/
 .env*
 
 cache.dev.json
+new-cache.ci.json
+new-cache.dev.json
 
 temp
 temp/*

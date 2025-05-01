@@ -44,8 +44,10 @@ export const InputMessageSchema = z.object({
   content: z.union([z.string(), z.array(ContentBlockSchema)]),
 });
 
-export const OutputMessageSchema = InputMessageSchema.extend({
-  stop_reason: z.enum(['end_turn', 'tool_use']).optional(),
+export const OutputMessageSchema = z.object({
+  type: z.literal('message'),
+  role: z.enum(['user', 'assistant']),
+  content: z.union([z.string(), z.array(ContentBlockSchema)]),
 });
 
 export const ToolConfigSchema = z.object({
@@ -55,8 +57,9 @@ export const ToolConfigSchema = z.object({
 });
 
 export const ResponseSchema = z.object({
-  messages: z.array(OutputMessageSchema),
-  stop_reason: z.enum(['end_turn', 'max_turns']),
+  type: z.literal('response'),
+  output: z.array(OutputMessageSchema),
+  output_text: z.string(),
 });
 
 export type Response = z.infer<typeof ResponseSchema>;

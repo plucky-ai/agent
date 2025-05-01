@@ -1,24 +1,41 @@
 import path from 'path';
 import { describe, expect, it } from 'vitest';
-import { Agent } from '../../src/Agent.js';
 import { LocalCache } from '../../src/LocalCache.js';
-import { AWSAnthropic } from '../../src/providers/AWSAnthropic.js';
-import { selectMessageText } from '../../src/utils.js';
+import { AWSAnthropicProvider, Agent } from '../../src/index.js';
 import { MockWeatherTool } from '../utils.js';
 
 const DEFAULT_AWS_ANTHROPIC_MODEL =
   'us.anthropic.claude-3-sonnet-20240229-v1:0';
 
-const provider = new AWSAnthropic({
+function getCachePaths(): {
+  readPath: string;
+  writePath: string;
+} {
+  if (process.env.ENV === 'ci') {
+    return {
+      readPath: getCachePathFromFilename('cache.ci.json'),
+      writePath: getCachePathFromFilename('new-cache.ci.json'),
+    };
+  }
+  return {
+    readPath: getCachePathFromFilename('cache.dev.json'),
+    writePath: getCachePathFromFilename('cache.dev.json'),
+  };
+}
+
+function getCachePathFromFilename(filename: string): string {
+  return path.resolve(import.meta.dirname, `../../cache/${filename}`);
+}
+const { readPath, writePath } = getCachePaths();
+
+const provider = new AWSAnthropicProvider({
   awsRegion: 'us-east-1',
   awsAccessKey: process.env.AWS_ACCESS_KEY,
   awsSecretKey: process.env.AWS_SECRET_KEY,
-  cache: new LocalCache(
-    path.resolve(
-      import.meta.dirname,
-      `../../cache/cache.${process.env.ENV === 'ci' ? 'ci' : 'dev'}.json`,
-    ),
-  ),
+  cache: new LocalCache({
+    readPath,
+    writePath,
+  }),
 });
 
 describe('Agent', () => {
@@ -40,12 +57,7 @@ describe('Agent', () => {
       model: DEFAULT_AWS_ANTHROPIC_MODEL,
     });
     expect(response).toBeDefined();
-    expect(response.messages?.[0].content).toEqual([
-      {
-        type: 'text',
-        text: 'Hello world!',
-      },
-    ]);
+    expect(response.output_text).toEqual('Hello world!');
   }, 10000);
 
   it('should be able to get a response with a tool', async () => {
@@ -60,10 +72,7 @@ describe('Agent', () => {
       model: DEFAULT_AWS_ANTHROPIC_MODEL,
     });
     expect(response).toBeDefined();
-    const messageText = selectMessageText(
-      response.messages[response.messages.length - 1],
-    );
-    expect(messageText).toContain('Tokyo');
-    expect(messageText).toContain('20');
+    expect(response.output_text).toContain('Tokyo');
+    expect(response.output_text).toContain('20');
   }, 10000);
 });
