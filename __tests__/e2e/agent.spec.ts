@@ -1,7 +1,13 @@
 import path from 'path';
 import { describe, expect, it } from 'vitest';
-import { LocalCache } from '../../src/LocalCache.js';
-import { AWSAnthropicProvider, Agent } from '../../src/index.js';
+import z from 'zod';
+import {
+  AWSAnthropicProvider,
+  Agent,
+  LocalCache,
+  Observation,
+} from '../../src/index.js';
+import { zodToJsonSchema } from '../../src/utils.js';
 import { MockWeatherTool } from '../utils.js';
 
 const DEFAULT_AWS_ANTHROPIC_MODEL =
@@ -74,5 +80,50 @@ describe('Agent', () => {
     expect(response).toBeDefined();
     expect(response.output_text).toContain('Tokyo');
     expect(response.output_text).toContain('20');
+  }, 10000);
+
+  it('should be able to get a response with a tool and a json schema', async () => {
+    const responseSchema = z.object({
+      degrees: z.number(),
+    });
+    const agent = new Agent({
+      provider,
+      tools: [new MockWeatherTool(20)],
+    });
+    const response = await agent.getResponse({
+      messages: [{ role: 'user', content: 'What is the weather in Tokyo?' }],
+      model: DEFAULT_AWS_ANTHROPIC_MODEL,
+      jsonSchema: zodToJsonSchema(responseSchema),
+    });
+    expect(response).toBeDefined();
+    const parsed = JSON.parse(response.output_text);
+    expect(parsed.degrees).toBe(20);
+    expect(() => responseSchema.parse(parsed)).not.toThrow();
+  }, 10000);
+
+  it('should fix invalid JSON responses', async () => {
+    const responseSchema = z.object({
+      degrees: z.number(),
+    });
+    const agent = new Agent({
+      provider,
+      tools: [new MockWeatherTool(20)],
+    });
+    const response = await agent.getValidatedJsonResponse({
+      messages: [
+        { role: 'user', content: 'What is the weather in Tokyo?' },
+        {
+          role: 'assistant',
+          content: '{"degrees": 20',
+        },
+      ],
+      model: DEFAULT_AWS_ANTHROPIC_MODEL,
+      jsonSchema: zodToJsonSchema(responseSchema),
+      observation: new Observation(),
+    });
+    expect(response).toBeDefined();
+    const parsed = JSON.parse(response.output_text);
+    expect(parsed.degrees).toBe(20);
+    expect(() => responseSchema.parse(parsed)).not.toThrow();
   }, 10000);
 });

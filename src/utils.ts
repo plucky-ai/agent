@@ -57,18 +57,22 @@ export function selectToolUseBlock(
   return content.find((block) => block.type === 'tool_use');
 }
 
-export function isValidJson(options: {
-  content: string;
-  jsonSchema: unknown;
-}): boolean {
+export function isValidJson(
+  content: string,
+  jsonSchema: unknown,
+): {
+  isValid: boolean;
+  errors?: string;
+} {
   try {
+    const parsed = JSON.parse(content);
     const ajv = new Ajv();
-    const validate = ajv.compile(options.jsonSchema);
-    const valid = validate(options.content);
-    return valid;
+    const validate = ajv.compile(jsonSchema);
+    const valid = validate(parsed);
+    return { isValid: valid, errors: String(validate.errors) };
   } catch (e) {
-    if (e instanceof Ajv.ValidationError) {
-      return false;
+    if (e instanceof SyntaxError) {
+      return { isValid: false, errors: String(e) };
     }
     throw e;
   }

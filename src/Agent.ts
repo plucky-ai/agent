@@ -3,7 +3,12 @@ import { Observation } from './Observation.js';
 import { Observer } from './Observer.js';
 import { BaseProvider } from './providers/BaseProvider.js';
 import { Tool } from './Tool.js';
-import { InputMessage, OutputMessage, Response } from './types.js';
+import {
+  InputMessage,
+  OutputMessage,
+  Response,
+  ToolUseBlock,
+} from './types.js';
 import {
   isValidJson,
   selectAllText,
@@ -56,7 +61,7 @@ export class Agent {
     let systemMessage = this.system;
     if (jsonSchema) {
       systemMessage += `
-      In your final message, you must return a JSON object that matches the following schema:
+      In your final message, you must return only a JSON object that matches the below schema with no other commentary.
 
       ${JSON.stringify(jsonSchema, null, 2)}`;
     }
@@ -77,24 +82,12 @@ export class Agent {
       outputMessages.push(newMessage);
       const toolUseBlock = selectToolUseBlock(newMessage.content);
       if (!toolUseBlock) break;
-      const tool = this.findToolByName(toolUseBlock.name);
-      if (!tool)
-        throw new Error(`Tool with name ${toolUseBlock.name} not found.`);
-      const toolResponseContent = await tool.call(toolUseBlock.input, {
-        id: uuidv4(),
-        messages,
+      const toolMessage = await this.runTool({
+        toolUseBlock,
+        messages: allMessages,
         observation: trace,
       });
-      outputMessages.push({
-        role: 'user',
-        content: [
-          {
-            type: 'tool_result',
-            tool_use_id: toolUseBlock.id,
-            content: toolResponseContent,
-          },
-        ],
-      });
+      outputMessages.push(toolMessage);
     }
     trace.end({
       output: {
@@ -102,19 +95,12 @@ export class Agent {
       },
     });
     if (jsonSchema) {
-      const lastText = selectLastText({ messages: outputMessages });
-      const isValid = isValidJson({
-        content: lastText,
+      return this.getValidatedJsonResponse({
+        messages: outputMessages,
         jsonSchema,
+        model: options.model,
+        observation: trace,
       });
-      if (!isValid) {
-        throw new Error('Invalid JSON');
-      }
-      return {
-        type: 'response',
-        output: outputMessages,
-        output_text: lastText,
-      };
     }
     return {
       type: 'response',
@@ -143,5 +129,77 @@ export class Agent {
     const tool = this.tools.find((tool) => tool.name === name);
     if (!tool) throw new Error(`Tool with name ${name} not found.`);
     return tool;
+  }
+  async runTool(options: {
+    toolUseBlock: ToolUseBlock;
+    messages: InputMessage[];
+    observation: Observation;
+  }): Promise<OutputMessage> {
+    const { toolUseBlock, messages, observation } = options;
+    const tool = this.findToolByName(toolUseBlock.name);
+    if (!tool)
+      throw new Error(`Tool with name ${toolUseBlock.name} not found.`);
+    const toolResponseContent = await tool.call(toolUseBlock.input, {
+      id: uuidv4(),
+      messages,
+      observation,
+    });
+    return {
+      role: 'user',
+      content: [
+        {
+          type: 'tool_result',
+          tool_use_id: toolUseBlock.id,
+          content: toolResponseContent,
+        },
+      ],
+    };
+  }
+  async getValidatedJsonResponse(
+    options: {
+      jsonSchema: unknown;
+      messages: OutputMessage[];
+      model: string;
+      observation: Observation;
+    },
+    attempts = 0,
+  ): Promise<Response> {
+    attempts++;
+    const { jsonSchema, messages, model, observation } = options;
+    const lastText = selectLastText({ messages });
+    const { isValid, errors } = isValidJson(lastText, jsonSchema);
+    if (!isValid) {
+      if (attempts > 1) {
+        throw new Error(`Invalid JSON: ${lastText.slice(0, 100)}`);
+      }
+      const secondAttempt = await this.provider.fetchMessage({
+        messages: messages.concat([
+          {
+            role: 'user',
+            content: `The previous JSON response was invalid and returned the below errors. Please return a valid JSON object that matches the below schema.
+
+            ${JSON.stringify(jsonSchema, null, 2)}
+
+            Errors: ${errors}`,
+          },
+        ]),
+        model,
+        observation,
+      });
+      return this.getValidatedJsonResponse(
+        {
+          messages: [...messages, secondAttempt],
+          jsonSchema,
+          model,
+          observation,
+        },
+        attempts,
+      );
+    }
+    return {
+      type: 'response',
+      output: messages,
+      output_text: lastText,
+    };
   }
 }
