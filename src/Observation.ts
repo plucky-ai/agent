@@ -1,4 +1,4 @@
-import { LangfuseTraceClient } from 'langfuse';
+import { LangfuseTraceClient } from 'langfuse-core';
 import { LangfuseObservationClient } from './types.js';
 
 export class Observation {

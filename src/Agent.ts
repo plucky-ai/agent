@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from 'uuid';
-import { JsonSchema7ObjectType } from 'zod-to-json-schema/dist/types/index.js';
 import { Observation } from './Observation.js';
 import { Observer } from './Observer.js';
 import { BaseProvider } from './providers/BaseProvider.js';
@@ -41,7 +40,7 @@ export class Agent {
     model: string;
     userId?: string;
     sessionId?: string;
-    jsonSchema?: JsonSchema7ObjectType;
+    jsonSchema?: unknown;
   }): Promise<Response> {
     const { messages, userId, sessionId, jsonSchema } = options;
     const outputMessages: OutputMessage[] = [];
