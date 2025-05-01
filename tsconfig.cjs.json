@@ -3,7 +3,9 @@
   "compilerOptions": {
     "moduleResolution": "node",
     "module": "commonjs",
-    "outDir": "./dist/cjs"
+    "outDir": "./dist/cjs",
+    "rootDir": "./src",
+    "declaration": true
   },
   "sourceMap": false,
   "removeComments": true,

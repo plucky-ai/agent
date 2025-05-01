@@ -2,7 +2,9 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "node16",
-    "outDir": "./dist/esm"
+    "outDir": "./dist/esm",
+    "rootDir": "./src",
+    "declaration": true
   },
   "sourceMap": false,
   "removeComments": true,

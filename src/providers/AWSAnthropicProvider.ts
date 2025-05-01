@@ -9,7 +9,7 @@ import { FetchRawMessageOptions, OutputMessage } from '../types.js';
 import { useCacheIfPresent } from '../utils.js';
 import { BaseProvider } from './BaseProvider.js';
 
-export class AWSAnthropic extends BaseProvider {
+export class AWSAnthropicProvider extends BaseProvider {
   private readonly anthropic: AnthropicBedrock;
   constructor(options: {
     awsAccessKey: string;
@@ -52,7 +52,6 @@ export class AWSAnthropic extends BaseProvider {
     return {
       role: 'assistant',
       content: response.content,
-      stop_reason: 'end_turn',
     };
   }
 }

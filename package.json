@@ -1,14 +1,14 @@
 {
   "name": "@plucky-ai/agent",
-  "version": "0.0.1-alpha.2",
+  "version": "0.0.1-alpha.5",
   "description": "Plucky's AI agentic framework.",
   "type": "module",
   "engines": {
     "node": ">= 22.11 < 23"
   },
-  "main": "dist/cjs/src/index.js",
-  "module": "dist/esm/src/index.js",
-  "types": "dist/types/src/index.d.ts",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
   "devDependencies": {
     "@eslint/js": "~9.25.1",
     "@types/eslint__js": "~8.42",
@@ -29,26 +29,26 @@
   },
   "scripts": {
     "start": "node build/src/main.js",
-    "clean": "rimraf coverage build tmp",
+    "clean": "rimraf coverage dist tmp",
+    "clean:dist": "rimraf dist",
     "prebuild": "npm run lint",
     "build:cjs": "tsc --project tsconfig.cjs.json",
     "build:esm": "tsc --project tsconfig.esm.json",
-    "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist/types",
-    "build": "npm run build:cjs && npm run build:esm && npm run build:types",
+    "build": "npm run clean:dist && npm run build:cjs && npm run build:esm",
     "build:watch": "tsc -w -p tsconfig.json",
-    "build:release": "npm run clean && tsc -p tsconfig.release.json",
     "lint": "eslint .",
     "test": "vitest run unit --config __tests__/vitest.config.ts",
     "test:coverage": "vitest run unit --config __tests__/vitest.config.ts --coverage.enabled --coverage.all",
     "prettier": "prettier \"{src,__{tests}__}/**/*.{ts,mts}\" --config .prettierrc --write",
     "prettier:check": "prettier \"{src,__{tests}__}/**/*.{ts,mts}\" --config .prettierrc --check",
     "test:watch": "vitest unit",
-    "publish-package": "NPM_TOKEN=$NPM_TOKEN bin/publish-npm"
+    "publish-npm": "NPM_TOKEN=$NPM_TOKEN bin/publish-npm"
   },
   "author": "Ryan Villanueva",
   "license": "MIT",
   "dependencies": {
     "@anthropic-ai/bedrock-sdk": "^0.12.6",
+    "ajv": "^8.17.1",
     "dotenv": "^16.5.0",
     "langfuse": "^3.37.2",
     "tslib": "~2.8",

@@ -1,8 +1,9 @@
+import { Ajv } from 'ajv';
 import { createHash } from 'crypto';
 import { z } from 'zod';
 import { zodToJsonSchema as zodToJsonSchemaRaw } from 'zod-to-json-schema';
 import { LocalCache } from './LocalCache.js';
-import { OutputMessage } from './types.js';
+import { ContentBlock, OutputMessage, ToolUseBlock } from './types.js';
 
 export function getOrderedHash(args: unknown): string {
   const sortedArgs = Object.keys(args)
@@ -45,4 +46,61 @@ export function zodToJsonSchema(
   schema: z.ZodSchema,
 ): ReturnType<typeof zodToJsonSchemaRaw>['definitions'][string] {
   return zodToJsonSchemaRaw(schema, 'mySchema').definitions['mySchema'];
+}
+
+export function selectToolUseBlock(
+  content: string | ContentBlock[],
+): ToolUseBlock | null {
+  if (typeof content === 'string') {
+    return null;
+  }
+  return content.find((block) => block.type === 'tool_use');
+}
+
+export function isValidJson(options: {
+  content: string;
+  jsonSchema: unknown;
+}): boolean {
+  try {
+    const ajv = new Ajv();
+    const validate = ajv.compile(options.jsonSchema);
+    const valid = validate(options.content);
+    return valid;
+  } catch (e) {
+    if (e instanceof Ajv.ValidationError) {
+      return false;
+    }
+    throw e;
+  }
+}
+
+export function selectLastText(options: { messages: OutputMessage[] }): string {
+  for (let i = 0; i < options.messages.length; i++) {
+    const message = options.messages[options.messages.length - 1 - i];
+    if (typeof message.content === 'string') {
+      return message.content;
+    }
+    for (let j = 0; j < message.content.length; j++) {
+      const contentBlock = message.content[message.content.length - 1 - j];
+      if (contentBlock.type === 'text') {
+        return contentBlock.text;
+      }
+    }
+  }
+  throw new Error('No text found in messages');
+}
+
+export function selectAllText(options: { messages: OutputMessage[] }): string {
+  return options.messages
+    .filter((message) => message.role === 'assistant')
+    .map((message) => {
+      if (typeof message.content === 'string') {
+        return message.content;
+      }
+      return message.content
+        .filter((block) => block.type === 'text')
+        .map((block) => block.text)
+        .join('\n\n');
+    })
+    .join('\n\n');
 }

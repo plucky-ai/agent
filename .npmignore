@@ -1,3 +1,13 @@
-# Ignore everything except the dist directory
+# Ignore everything
 *
-!dist
+
+# But include these
+!dist/
+!dist/cjs/
+!dist/cjs/**/*
+!dist/esm/
+!dist/esm/**/*
+!dist/types/
+!dist/types/**/*
+!package.json
+!README.md

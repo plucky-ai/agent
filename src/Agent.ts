@@ -1,15 +1,16 @@
 import { v4 as uuidv4 } from 'uuid';
+import { JsonSchema7ObjectType } from 'zod-to-json-schema/dist/types/index.js';
 import { Observation } from './Observation.js';
 import { Observer } from './Observer.js';
 import { BaseProvider } from './providers/BaseProvider.js';
 import { Tool } from './Tool.js';
+import { InputMessage, OutputMessage, Response } from './types.js';
 import {
-  ContentBlock,
-  InputMessage,
-  OutputMessage,
-  Response,
-  ToolUseBlock,
-} from './types.js';
+  isValidJson,
+  selectAllText,
+  selectLastText,
+  selectToolUseBlock,
+} from './utils.js';
 export class Agent {
   private readonly provider: BaseProvider;
   private readonly tools: Tool[];
@@ -40,17 +41,26 @@ export class Agent {
     model: string;
     userId?: string;
     sessionId?: string;
+    jsonSchema?: JsonSchema7ObjectType;
   }): Promise<Response> {
-    const { messages, userId, sessionId } = options;
+    const { messages, userId, sessionId, jsonSchema } = options;
     const outputMessages: OutputMessage[] = [];
     let turns = 0;
     const trace = this.observer.trace({
       input: {
         messages,
+        jsonSchema,
       },
       userId,
       sessionId,
     });
+    let systemMessage = this.system;
+    if (jsonSchema) {
+      systemMessage += `
+      In your final message, you must return a JSON object that matches the following schema:
+
+      ${JSON.stringify(jsonSchema, null, 2)}`;
+    }
     while (turns < this.maxTurns) {
       turns++;
       const allMessages = messages.concat(
@@ -60,7 +70,7 @@ export class Agent {
         })),
       );
       const newMessage = await this.getMessage({
-        system: this.system,
+        system: systemMessage,
         model: options.model,
         messages: allMessages,
         observation: trace,
@@ -87,15 +97,30 @@ export class Agent {
         ],
       });
     }
-    // FIXME: Should break out prior block so trace is always ended
     trace.end({
       output: {
         messages: outputMessages,
       },
     });
+    if (jsonSchema) {
+      const lastText = selectLastText({ messages: outputMessages });
+      const isValid = isValidJson({
+        content: lastText,
+        jsonSchema,
+      });
+      if (!isValid) {
+        throw new Error('Invalid JSON');
+      }
+      return {
+        type: 'response',
+        output: outputMessages,
+        output_text: lastText,
+      };
+    }
     return {
-      messages: outputMessages,
-      stop_reason: 'max_turns',
+      type: 'response',
+      output: outputMessages,
+      output_text: selectAllText({ messages: outputMessages }),
     };
   }
 
@@ -120,13 +145,4 @@ export class Agent {
     if (!tool) throw new Error(`Tool with name ${name} not found.`);
     return tool;
   }
-}
-
-function selectToolUseBlock(
-  content: string | ContentBlock[],
-): ToolUseBlock | null {
-  if (typeof content === 'string') {
-    return null;
-  }
-  return content.find((block) => block.type === 'tool_use');
 }
