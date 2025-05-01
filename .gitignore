@@ -32,6 +32,8 @@ dist/
 .env*
 
 cache.dev.json
+new-cache.ci.json
+new-cache.dev.json
 
 temp
 temp/*

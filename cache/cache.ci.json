@@ -1,1 +1,20 @@
-{}
+{
+  "9044047c8f3df24865df617131babf020550dfa26960d322a3e79268694daae6": {
+    "id": "msg_bdrk_016AkPkhyzxv7Q61VvcVpu3Q",
+    "type": "message",
+    "role": "assistant",
+    "model": "claude-3-sonnet-20240229",
+    "content": [
+      {
+        "type": "text",
+        "text": "The current temperature in Tokyo is 20 degrees Celsius, with a light breeze coming from the northeast. The forecast calls for mostly sunny skies today, making it a nice day to spend some time outdoors in Tokyo."
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "usage": {
+      "input_tokens": 355,
+      "output_tokens": 51
+    }
+  }
+}
