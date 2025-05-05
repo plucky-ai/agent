@@ -12,11 +12,11 @@
 			]
 		}
 	},
-"mounts": [
-	"source=${localWorkspaceFolder},target=/workspaces/agent,type=bind,consistency=cached",
-	"source=node_modules,target=/workspaces/agent/node_modules,type=volume"
-]
-
+	"mounts": [
+		"source=workspace,target=/workspace,type=volume",
+		"source=node_modules,target=/workspace/node_modules,type=volume",
+		"source=${localWorkspaceFolder}/.devcontainer,target=/workspace/.devcontainer,type=bind,consistency=delegated"
+	],
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 
@@ -30,5 +30,6 @@
 	// "customizations": {},
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+	// "remoteUser": "root",
+	"workspaceFolder": "/workspace"
 }
