@@ -11,7 +11,11 @@
 				"rvest.vs-code-prettier-eslint"
 			]
 		}
-	}
+	},
+"mounts": [
+	"source=${localWorkspaceFolder},target=/workspaces/agent,type=bind,consistency=cached",
+	"source=node_modules,target=/workspaces/agent/node_modules,type=volume"
+]
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
