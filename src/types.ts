@@ -9,14 +9,14 @@ import { Observation } from './Observation.js';
 import { Tool } from './Tool.js';
 export type ProviderName = 'aws-anthropic';
 
-export const TextBlockSchema = z
+export const TextContentBlockSchema = z
   .object({
     type: z.literal('text'),
     text: z.string(),
   })
   .strict();
 
-export const ToolUseBlockSchema = z
+export const ToolUseContentBlockSchema = z
   .object({
     type: z.literal('tool_use'),
     id: z.string(),
@@ -25,7 +25,7 @@ export const ToolUseBlockSchema = z
   })
   .strict();
 
-export const ToolResultBlockSchema = z
+export const ToolResultContentBlockSchema = z
   .object({
     type: z.literal('tool_result'),
     tool_use_id: z.string(),
@@ -34,9 +34,9 @@ export const ToolResultBlockSchema = z
   .strict();
 
 export const ContentBlockSchema = z.union([
-  TextBlockSchema,
-  ToolUseBlockSchema,
-  ToolResultBlockSchema,
+  TextContentBlockSchema,
+  ToolUseContentBlockSchema,
+  ToolResultContentBlockSchema,
 ]);
 
 export const InputMessageSchema = z.object({
@@ -44,10 +44,8 @@ export const InputMessageSchema = z.object({
   content: z.union([z.string(), z.array(ContentBlockSchema)]),
 });
 
-export const OutputMessageSchema = z.object({
+export const OutputMessageSchema = InputMessageSchema.extend({
   type: z.literal('message'),
-  role: z.enum(['user', 'assistant']),
-  content: z.union([z.string(), z.array(ContentBlockSchema)]),
 });
 
 export const ToolConfigSchema = z.object({
@@ -64,9 +62,15 @@ export const ResponseSchema = z.object({
 
 export type Response = z.infer<typeof ResponseSchema>;
 
-export type ContentBlock = z.infer<typeof ContentBlockSchema>;
+export type TextContentBlock = z.infer<typeof TextContentBlockSchema>;
 
-export type ToolUseBlock = z.infer<typeof ToolUseBlockSchema>;
+export type ToolUseContentBlock = z.infer<typeof ToolUseContentBlockSchema>;
+
+export type ToolResultContentBlock = z.infer<
+  typeof ToolResultContentBlockSchema
+>;
+
+export type ContentBlock = z.infer<typeof ContentBlockSchema>;
 
 export type InputMessage = z.infer<typeof InputMessageSchema>;
 
@@ -79,7 +83,7 @@ export type LangfuseObservationClient =
   | LangfuseSpanClient
   | LangfuseGenerationClient;
 
-export type ToolCallOptions = {
+export type ToolCallContext = {
   id: string;
   messages: InputMessage[];
   observation: Observation;

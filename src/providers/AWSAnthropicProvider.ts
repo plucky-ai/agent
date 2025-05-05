@@ -36,7 +36,7 @@ export class AWSAnthropicProvider extends BaseProvider {
       tools: options.tools?.map((tool) => ({
         name: tool.name,
         description: tool.description,
-        input_schema: tool.getModelConfig().inputSchema as Tool.InputSchema,
+        input_schema: tool.getInputJsonSchema() as Tool.InputSchema,
       })),
     };
     const generation = options.observation.generation({
@@ -50,6 +50,7 @@ export class AWSAnthropicProvider extends BaseProvider {
       output: response,
     });
     return {
+      type: 'message',
       role: 'assistant',
       content: response.content,
     };

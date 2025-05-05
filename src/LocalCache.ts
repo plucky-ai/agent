@@ -19,8 +19,8 @@ export class LocalCache {
         'Path and readPath or writePath cannot both be provided.',
       );
     }
-    this.readPath = readPath ?? path;
-    this.writePath = writePath ?? path;
+    this.readPath = readPath ?? (path as string);
+    this.writePath = writePath ?? (path as string);
     this.filesChecked = false;
   }
   async confirmFilesExist(): Promise<void> {

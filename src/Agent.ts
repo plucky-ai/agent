@@ -7,7 +7,7 @@ import {
   InputMessage,
   OutputMessage,
   Response,
-  ToolUseBlock,
+  ToolUseContentBlock,
 } from './types.js';
 import {
   isValidJson,
@@ -80,10 +80,10 @@ export class Agent {
         observation: trace,
       });
       outputMessages.push(newMessage);
-      const toolUseBlock = selectToolUseBlock(newMessage.content);
-      if (!toolUseBlock) break;
+      const toolUseContentBlock = selectToolUseBlock(newMessage.content);
+      if (!toolUseContentBlock) break;
       const toolMessage = await this.runTool({
-        toolUseBlock,
+        toolUseContentBlock,
         messages: allMessages,
         observation: trace,
       });
@@ -96,7 +96,12 @@ export class Agent {
     });
     if (jsonSchema) {
       return this.getValidatedJsonResponse({
-        messages: messages.concat(outputMessages),
+        messages: messages.concat(
+          outputMessages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+        ),
         jsonSchema,
         model: options.model,
         observation: trace,
@@ -131,25 +136,26 @@ export class Agent {
     return tool;
   }
   async runTool(options: {
-    toolUseBlock: ToolUseBlock;
+    toolUseContentBlock: ToolUseContentBlock;
     messages: InputMessage[];
     observation: Observation;
   }): Promise<OutputMessage> {
-    const { toolUseBlock, messages, observation } = options;
-    const tool = this.findToolByName(toolUseBlock.name);
+    const { toolUseContentBlock, messages, observation } = options;
+    const tool = this.findToolByName(toolUseContentBlock.name);
     if (!tool)
-      throw new Error(`Tool with name ${toolUseBlock.name} not found.`);
-    const toolResponseContent = await tool.call(toolUseBlock.input, {
+      throw new Error(`Tool with name ${toolUseContentBlock.name} not found.`);
+    const toolResponseContent = await tool.call(toolUseContentBlock.input, {
       id: uuidv4(),
       messages,
       observation,
     });
     return {
+      type: 'message',
       role: 'user',
       content: [
         {
           type: 'tool_result',
-          tool_use_id: toolUseBlock.id,
+          tool_use_id: toolUseContentBlock.id,
           content: toolResponseContent,
         },
       ],
@@ -158,7 +164,7 @@ export class Agent {
   async getValidatedJsonResponse(
     options: {
       jsonSchema: unknown;
-      messages: OutputMessage[];
+      messages: InputMessage[];
       model: string;
       observation: Observation;
     },
@@ -167,7 +173,7 @@ export class Agent {
     attempts++;
     const { jsonSchema, messages, model, observation } = options;
     const lastText = selectLastText({ messages });
-    const { isValid, errors } = isValidJson(lastText, jsonSchema);
+    const { isValid, errors } = await isValidJson(lastText, jsonSchema);
     if (!isValid) {
       if (attempts > 1) {
         throw new Error(`Invalid JSON: ${lastText.slice(0, 100)}`);
@@ -198,7 +204,11 @@ export class Agent {
     }
     return {
       type: 'response',
-      output: messages,
+      output: messages.map((m) => ({
+        type: 'message',
+        role: m.role,
+        content: m.content,
+      })),
       output_text: lastText,
     };
   }

@@ -1,11 +1,22 @@
-import { Ajv } from 'ajv';
+import { Ajv, AnySchema } from 'ajv';
 import { createHash } from 'crypto';
 import { z } from 'zod';
-import { zodToJsonSchema as zodToJsonSchemaRaw } from 'zod-to-json-schema';
+import {
+  zodToJsonSchema as zodToJsonSchemaRaw,
+  JsonSchema7Type,
+} from 'zod-to-json-schema';
 import { LocalCache } from './LocalCache.js';
-import { ContentBlock, OutputMessage, ToolUseBlock } from './types.js';
+import {
+  ContentBlock,
+  InputMessage,
+  OutputMessage,
+  ToolUseContentBlock,
+} from './types.js';
 
 export function getOrderedHash(args: unknown): string {
+  if (typeof args !== 'object' || args === null) {
+    return createHash('sha256').update(JSON.stringify(args)).digest('hex');
+  }
   const sortedArgs = Object.keys(args)
     .sort()
     .reduce((acc, key) => {
@@ -42,34 +53,34 @@ export function selectMessageText(message: OutputMessage): string {
   return text.text;
 }
 
-export function zodToJsonSchema(
-  schema: z.ZodSchema,
-): ReturnType<typeof zodToJsonSchemaRaw>['definitions'][string] {
-  return zodToJsonSchemaRaw(schema, 'mySchema').definitions['mySchema'];
+export function zodToJsonSchema(schema: z.ZodSchema): JsonSchema7Type {
+  return zodToJsonSchemaRaw(schema, 'mySchema')?.definitions?.[
+    'mySchema'
+  ] as JsonSchema7Type;
 }
 
 export function selectToolUseBlock(
   content: string | ContentBlock[],
-): ToolUseBlock | null {
+): ToolUseContentBlock | null {
   if (typeof content === 'string') {
     return null;
   }
-  return content.find((block) => block.type === 'tool_use');
+  return content.find((block) => block.type === 'tool_use') ?? null;
 }
 
-export function isValidJson(
+export async function isValidJson(
   content: string,
   jsonSchema: unknown,
-): {
+): Promise<{
   isValid: boolean;
   errors?: string;
-} {
+}> {
   try {
     const parsed = JSON.parse(content);
     const ajv = new Ajv();
-    const validate = ajv.compile(jsonSchema);
-    const valid = validate(parsed);
-    return { isValid: valid, errors: String(validate.errors) };
+    const validate = ajv.compile(jsonSchema as AnySchema);
+    const valid = await validate(parsed);
+    return { isValid: Boolean(valid), errors: String(validate.errors) };
   } catch (e) {
     if (e instanceof SyntaxError) {
       return { isValid: false, errors: String(e) };
@@ -78,7 +89,9 @@ export function isValidJson(
   }
 }
 
-export function selectLastText(options: { messages: OutputMessage[] }): string {
+export function selectLastText(options: {
+  messages: (InputMessage | OutputMessage)[];
+}): string {
   for (let i = 0; i < options.messages.length; i++) {
     const message = options.messages[options.messages.length - 1 - i];
     if (typeof message.content === 'string') {
