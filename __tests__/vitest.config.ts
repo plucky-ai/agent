@@ -7,6 +7,7 @@ import {
 
 export default defineConfig({
   test: {
+    include: ['**/*.spec.ts'],
     exclude: [...configDefaults.exclude, 'build/**/*'],
     coverage: {
       provider: 'v8',

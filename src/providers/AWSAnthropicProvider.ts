@@ -1,13 +1,13 @@
 import { AnthropicBedrock } from '@anthropic-ai/bedrock-sdk';
 import type {
   MessageCreateParams,
-  MessageParam,
   Tool,
 } from '@anthropic-ai/sdk/resources/messages';
 import { LocalCache } from '../LocalCache.js';
 import { FetchRawMessageOptions, OutputMessage } from '../types.js';
 import { useCacheIfPresent } from '../utils.js';
 import { BaseProvider } from './BaseProvider.js';
+import { Anthropic } from '@anthropic-ai/sdk/index.js';
 
 export class AWSAnthropicProvider extends BaseProvider {
   private readonly anthropic: AnthropicBedrock;
@@ -27,12 +27,12 @@ export class AWSAnthropicProvider extends BaseProvider {
     });
   }
   async fetchMessage(options: FetchRawMessageOptions): Promise<OutputMessage> {
-    const { messages, system, model } = options;
+    const { messages, system, model, maxTokens } = options;
     const args: MessageCreateParams = {
       system,
       model,
-      messages: messages as unknown as MessageParam[],
-      max_tokens: 1000,
+      messages: messages as MessageCreateParams['messages'],
+      max_tokens: maxTokens,
       tools: options.tools?.map((tool) => ({
         name: tool.name,
         description: tool.description,
@@ -43,7 +43,7 @@ export class AWSAnthropicProvider extends BaseProvider {
       inputs: args,
     });
     const getAnthropicMessage = useCacheIfPresent<
-      (args: MessageCreateParams) => Promise<OutputMessage>
+      (args: MessageCreateParams) => Promise<Anthropic.Messages.Message>
     >(this.anthropic.messages.create.bind(this.anthropic.messages), this.cache);
     const response = await getAnthropicMessage(args);
     generation.end({
@@ -52,7 +52,16 @@ export class AWSAnthropicProvider extends BaseProvider {
     return {
       type: 'message',
       role: 'assistant',
-      content: response.content,
+      content:
+        typeof response.content === 'string'
+          ? response.content
+          : (response.content.filter((block) =>
+              ['text', 'tool_use'].includes(block.type),
+            ) as (
+              | Anthropic.Messages.TextBlock
+              | Anthropic.Messages.ToolUseBlock
+            )[]),
+      tokens_used: response.usage.output_tokens,
     };
   }
 }

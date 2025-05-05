@@ -1,18 +1,17 @@
 import { z } from 'zod';
 import { Tool } from '../src/Tool.js';
+const mockWeatherTool = new Tool(
+  {
+    name: 'get_weather',
+    description:
+      'Get the weather in a location using AccuWeather. Call this when a user asks for the weather.',
+    inputSchema: z.object({
+      location: z.string(),
+    }),
+  },
+  async (input) => {
+    return `The weather in ${input.location} is 20 degrees Celsius.`;
+  },
+);
 
-export class MockWeatherTool extends Tool {
-  constructor(private readonly degrees: number) {
-    super({
-      name: 'get_weather',
-      description: 'Get the weather in a location using AccuWeather',
-      inputSchema: z.object({
-        location: z.string(),
-      }),
-    });
-  }
-
-  async call(input: z.infer<typeof this.inputSchema>): Promise<string> {
-    return `The weather in ${input.location} is ${this.degrees} degrees.`;
-  }
-}
+export default mockWeatherTool;
