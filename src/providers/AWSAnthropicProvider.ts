@@ -42,7 +42,6 @@ export class AWSAnthropicProvider extends BaseProvider {
       inputs: args,
     });
     const response = await this.fetchRawMessage(args);
-    console.log('response', JSON.stringify(response, null, 2));
     generation.end({
       output: response,
     });

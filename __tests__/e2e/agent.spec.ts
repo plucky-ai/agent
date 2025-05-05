@@ -55,7 +55,6 @@ describe('Agent', () => {
       maxTokens: 1000,
     });
     expect(response).toBeDefined();
-    console.log(response);
   });
 
   it('should be able to get a response', async () => {
@@ -125,7 +124,6 @@ describe('Agent', () => {
       maxTokens: 10000,
       maxTurns: 10,
     });
-    console.log('final response', JSON.stringify(response.output, null, 2));
 
     expect(response).toBeDefined();
     const parsed = JSON.parse(response.output_text);
