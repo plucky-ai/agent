@@ -1,14 +1,13 @@
 import path from 'path';
 import { describe, expect, it } from 'vitest';
 import z from 'zod';
-import {
-  AWSAnthropicProvider,
-  Agent,
-  LocalCache,
-  Observation,
-} from '../../src/index.js';
+
+import { Agent } from '../../src/Agent.js';
+import { AWSAnthropicProvider } from '../../src/index.js';
+import { LocalCache } from '../../src/LocalCache.js';
+import { Observation } from '../../src/Observation.js';
 import { zodToJsonSchema } from '../../src/utils.js';
-import mockWeatherTool from '../utils.js';
+import { mockWeatherAgent } from '../utils.js';
 
 const DEFAULT_AWS_ANTHROPIC_MODEL =
   'us.anthropic.claude-3-5-haiku-20241022-v1:0';
@@ -78,12 +77,7 @@ describe('Agent', () => {
   }, 10000);
 
   it('should be able to get a response with a tool', async () => {
-    const agent = new Agent({
-      system:
-        "You are a friendly assistant that helps users with daily tasks. Don't overexplain tool usage or reference tool names, though you can cite your sources. Focus on answering the user's questions.",
-      tools: [mockWeatherTool],
-    });
-    const response = await agent.getResponse({
+    const response = await mockWeatherAgent.getResponse({
       messages: [{ role: 'user', content: 'What is the weather in Tokyo?' }],
       model: DEFAULT_AWS_ANTHROPIC_MODEL,
       provider,
@@ -93,43 +87,16 @@ describe('Agent', () => {
     expect(response.output_text).toContain('20');
   }, 10000);
 
-  it('should be able to get a response with a tool and a json schema', async () => {
+  it('should fix invalid JSON responses', async () => {
     const responseSchema = z.object({
       degreesCelsius: z.number(),
     });
-    const agent = new Agent({
-      system: 'You help users with staying up to date with the weather.',
-      tools: [mockWeatherTool],
-    });
-    const response = await agent.getResponse({
-      messages: [
-        { role: 'user', content: 'What is the weather in Tokyo in Celsius?' },
-      ],
-      model: DEFAULT_AWS_ANTHROPIC_MODEL,
-      provider,
-      jsonSchema: zodToJsonSchema(responseSchema),
-      maxTokens: 10000,
-    });
-
-    expect(response).toBeDefined();
-    const parsed = JSON.parse(response.output_text);
-    expect(parsed.degreesCelsius).toBe(20);
-    expect(() => responseSchema.parse(parsed)).not.toThrow();
-  }, 10000);
-
-  it('should fix invalid JSON responses', async () => {
-    const responseSchema = z.object({
-      degrees: z.number(),
-    });
-    const agent = new Agent({
-      tools: [mockWeatherTool],
-    });
-    const response = await agent.getValidatedJsonResponse({
-      messages: [
+    const result = await mockWeatherAgent.getValidatedJsonResponse({
+      inputMessages: [
         { role: 'user', content: 'What is the weather in Tokyo in Celsius?' },
         {
           role: 'assistant',
-          content: '{"degrees": 20',
+          content: '{"degreesCelsius": 20',
         },
       ],
       model: DEFAULT_AWS_ANTHROPIC_MODEL,
@@ -138,9 +105,31 @@ describe('Agent', () => {
       observation: new Observation(),
       maxTokens: 2000,
     });
+    expect(result).toBeDefined();
+    const parsed = JSON.parse(result);
+    expect(parsed.degreesCelsius).toBe(20);
+    expect(() => responseSchema.parse(parsed)).not.toThrow();
+  });
+
+  it('should be able to get a response with a tool and a json schema', async () => {
+    const responseSchema = z.object({
+      degreesCelsius: z.number(),
+    });
+    const response = await mockWeatherAgent.getResponse({
+      messages: [
+        { role: 'user', content: 'What is the weather in Tokyo in Celsius?' },
+      ],
+      model: DEFAULT_AWS_ANTHROPIC_MODEL,
+      provider,
+      jsonSchema: zodToJsonSchema(responseSchema),
+      maxTokens: 10000,
+      maxTurns: 10,
+    });
+    console.log('final response', JSON.stringify(response.output, null, 2));
+
     expect(response).toBeDefined();
     const parsed = JSON.parse(response.output_text);
     expect(parsed.degreesCelsius).toBe(20);
     expect(() => responseSchema.parse(parsed)).not.toThrow();
-  }, 10000);
+  });
 });

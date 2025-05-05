@@ -62,13 +62,24 @@ export class Agent {
     let systemMessage = this.system;
     if (jsonSchema) {
       systemMessage += `
-      In your final message, you must return only a JSON object that matches the below schema with no other commentary.
-
-      ${JSON.stringify(jsonSchema, null, 2)}`;
+In your final message, you must return only a JSON object that matches the below schema with no other commentary.
+<json_output_schema>
+${JSON.stringify(jsonSchema, null, 2)}
+</json_output_schema>
+`;
     }
 
-    while (turns < maxTurns && maxTokens - tokens > 0) {
+    while (true) {
+      if (turns >= maxTurns) {
+        console.log('Max turns reached.');
+        break;
+      }
+      if (maxTokens - tokens <= 0) {
+        console.log('Max tokens reached.');
+        break;
+      }
       turns++;
+
       const allMessages = messages.concat(
         outputMessages.map((m) => ({
           role: m.role,
@@ -107,25 +118,32 @@ export class Agent {
       },
     });
     if (jsonSchema) {
-      const jsonResponse = await this.getValidatedJsonResponse({
-        messages: messages.concat(
-          outputMessages.map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
-        ),
+      const result = await this.getValidatedJsonResponse({
+        inputMessages: messages,
+        outputMessages,
         jsonSchema,
         model,
         observation: trace,
         provider,
         maxTokens: maxTokens - tokens,
       });
-      outputMessages.push(...jsonResponse.output);
+      outputMessages.push({
+        type: 'message',
+        role: 'assistant',
+        content: result,
+        tokens_used: 0,
+      });
+      return {
+        type: 'response',
+        output: outputMessages,
+        output_text: result,
+        tokens_used: tokens,
+      };
     }
     return {
       type: 'response',
       output: outputMessages,
-      output_text: selectAllText({ messages: outputMessages }),
+      output_text: selectAllText(outputMessages),
       tokens_used: tokens,
     };
   }
@@ -165,7 +183,8 @@ export class Agent {
   async getValidatedJsonResponse(
     options: {
       jsonSchema: unknown;
-      messages: InputMessage[];
+      inputMessages: InputMessage[];
+      outputMessages?: OutputMessage[];
       model: string;
       observation: Observation;
       provider: BaseProvider;
@@ -173,60 +192,74 @@ export class Agent {
       tokens?: number;
     },
     attempts = 0,
-  ): Promise<Response> {
-    attempts++;
-    const { jsonSchema, messages, model, observation, provider, maxTokens } =
-      options;
+  ): Promise<string> {
+    const {
+      jsonSchema,
+      model,
+      inputMessages,
+      observation,
+      provider,
+      maxTokens,
+    } = options;
     let tokens = options.tokens ?? 0;
-    const outputMessages: OutputMessage[] = [];
+    const outputMessages = options.outputMessages ?? [];
 
-    const lastText = selectLastText({ messages });
-    const { isValid, errors } = await isValidJson(lastText, jsonSchema);
-    if (!isValid) {
-      if (attempts > 1) {
-        throw new Error(`Invalid JSON: ${lastText.slice(0, 100)}`);
-      }
-      const message = await provider.fetchMessage({
-        messages: messages.concat([
-          {
-            role: 'user',
-            content: `The previous JSON response was invalid and returned the below errors. Please return a valid JSON object that matches the below schema.
-
-            ${JSON.stringify(jsonSchema, null, 2)}
-
-            Errors: ${errors}`,
-          },
-        ]),
-        model,
-        maxTokens: maxTokens - tokens,
-        observation,
-        name: 'structure_json',
-      });
-      tokens += message.tokens_used;
-      outputMessages.push(message);
-      messages.push({
-        role: 'assistant',
-        content: message.content,
-      });
-      return this.getValidatedJsonResponse(
-        {
-          messages: [...messages, message],
-          jsonSchema,
-          model,
-          observation,
-          provider,
-          maxTokens: options.maxTokens,
-          tokens,
-        },
-        attempts,
-      );
+    const lastText = selectLastText(inputMessages.concat(outputMessages));
+    // Clean the text by removing newlines and handling escaped characters
+    const cleaned = lastText
+      .replace(/\n/g, '') // Remove newlines
+      .replace(/\\n/g, '') // Remove escaped newlines
+      .replace(/\\"/g, '"') // Handle escaped quotes
+      .replace(/\\\\/g, '\\') // Handle double escaped backslashes
+      .trim(); // Remove any leading/trailing whitespace
+    const { isValid, errors } = await isValidJson(cleaned, jsonSchema);
+    console.log('cleaned', cleaned);
+    if (isValid) {
+      return cleaned;
     }
-    return {
-      type: 'response',
-      output: outputMessages,
-      output_text: lastText,
-      tokens_used: tokens,
-    };
+    outputMessages.push({
+      type: 'message',
+      role: 'user',
+      content: `The previous JSON response was invalid and returned the below errors. Please return a valid JSON object that matches the given schema. Respond only with the JSON object without any commentary.
+<json_output_schema>
+${JSON.stringify(jsonSchema, null, 2)}
+</json_output_schema>
+<errors>
+${errors}
+</errors>`,
+      tokens_used: 0,
+    });
+    if (attempts > 1) {
+      throw new Error(`Invalid JSON: ${cleaned.slice(0, 100)}`);
+    }
+    const outputMessage = await provider.fetchMessage({
+      system: `You are a JSON validator. You will be given a JSON response and a JSON schema. You will return a valid JSON object that matches the schema.`,
+      messages: inputMessages.concat(
+        outputMessages.map((m) => ({
+          role: m.role,
+          content: m.content,
+        })),
+      ),
+      model,
+      maxTokens: maxTokens - tokens,
+      observation,
+      name: 'structure_json',
+    });
+    tokens += outputMessage.tokens_used;
+    outputMessages.push(outputMessage);
+    return this.getValidatedJsonResponse(
+      {
+        inputMessages,
+        outputMessages,
+        jsonSchema,
+        model,
+        observation,
+        provider,
+        maxTokens: options.maxTokens,
+        tokens,
+      },
+      attempts + 1,
+    );
   }
 }
 

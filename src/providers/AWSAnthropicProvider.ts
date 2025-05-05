@@ -1,13 +1,12 @@
 import { AnthropicBedrock } from '@anthropic-ai/bedrock-sdk';
+import { Anthropic } from '@anthropic-ai/sdk/index.js';
 import type {
   MessageCreateParams,
   Tool,
 } from '@anthropic-ai/sdk/resources/messages';
 import { LocalCache } from '../LocalCache.js';
 import { FetchRawMessageOptions, OutputMessage } from '../types.js';
-import { useCacheIfPresent } from '../utils.js';
 import { BaseProvider } from './BaseProvider.js';
-import { Anthropic } from '@anthropic-ai/sdk/index.js';
 
 export class AWSAnthropicProvider extends BaseProvider {
   private readonly anthropic: AnthropicBedrock;
@@ -42,10 +41,8 @@ export class AWSAnthropicProvider extends BaseProvider {
     const generation = options.observation.generation({
       inputs: args,
     });
-    const getAnthropicMessage = useCacheIfPresent<
-      (args: MessageCreateParams) => Promise<Anthropic.Messages.Message>
-    >(this.anthropic.messages.create.bind(this.anthropic.messages), this.cache);
-    const response = await getAnthropicMessage(args);
+    const response = await this.fetchRawMessage(args);
+    console.log('response', JSON.stringify(response, null, 2));
     generation.end({
       output: response,
     });
@@ -61,7 +58,20 @@ export class AWSAnthropicProvider extends BaseProvider {
               | Anthropic.Messages.TextBlock
               | Anthropic.Messages.ToolUseBlock
             )[]),
-      tokens_used: response.usage.output_tokens,
+      tokens_used: response.usage.output_tokens + response.usage.input_tokens,
     };
+  }
+  async fetchRawMessage(
+    args: MessageCreateParams,
+  ): Promise<Anthropic.Messages.Message> {
+    if (this.cache) {
+      const cachedResult = await this.cache.get(args);
+      if (cachedResult) return cachedResult as Anthropic.Messages.Message;
+    }
+    const response = await this.anthropic.messages.create(args);
+    if (this.cache) {
+      await this.cache.set(args, response);
+    }
+    return response;
   }
 }

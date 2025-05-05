@@ -2,8 +2,8 @@ import { Ajv, AnySchema } from 'ajv';
 import { createHash } from 'crypto';
 import { z } from 'zod';
 import {
-  zodToJsonSchema as zodToJsonSchemaRaw,
   JsonSchema7Type,
+  zodToJsonSchema as zodToJsonSchemaRaw,
 } from 'zod-to-json-schema';
 import { LocalCache } from './LocalCache.js';
 import {
@@ -73,14 +73,17 @@ export async function isValidJson(
   jsonSchema: unknown,
 ): Promise<{
   isValid: boolean;
-  errors?: string;
+  errors: string;
 }> {
   try {
     const parsed = JSON.parse(content);
     const ajv = new Ajv();
     const validate = ajv.compile(jsonSchema as AnySchema);
     const valid = await validate(parsed);
-    return { isValid: Boolean(valid), errors: String(validate.errors) };
+    return {
+      isValid: Boolean(valid),
+      errors: String(validate.errors),
+    };
   } catch (e) {
     if (e instanceof SyntaxError) {
       return { isValid: false, errors: String(e) };
@@ -89,11 +92,11 @@ export async function isValidJson(
   }
 }
 
-export function selectLastText(options: {
-  messages: (InputMessage | OutputMessage)[];
-}): string {
-  for (let i = 0; i < options.messages.length; i++) {
-    const message = options.messages[options.messages.length - 1 - i];
+export function selectLastText(
+  messages: (InputMessage | OutputMessage)[],
+): string {
+  for (let i = 0; i < messages.length; i++) {
+    const message = messages[messages.length - 1 - i];
     if (typeof message.content === 'string') {
       return message.content;
     }
@@ -107,8 +110,8 @@ export function selectLastText(options: {
   throw new Error('No text found in messages');
 }
 
-export function selectAllText(options: { messages: OutputMessage[] }): string {
-  return options.messages
+export function selectAllText(messages: OutputMessage[]): string {
+  return messages
     .filter((message) => message.role === 'assistant')
     .map((message) => {
       if (typeof message.content === 'string') {

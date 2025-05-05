@@ -1,6 +1,7 @@
 import { z } from 'zod';
+import { Agent } from '../src/Agent.js';
 import { Tool } from '../src/Tool.js';
-const mockWeatherTool = new Tool(
+export const mockWeatherTool = new Tool(
   {
     name: 'get_weather',
     description:
@@ -14,4 +15,7 @@ const mockWeatherTool = new Tool(
   },
 );
 
-export default mockWeatherTool;
+export const mockWeatherAgent = new Agent({
+  system: 'You help users with staying up to date with the weather.',
+  tools: [mockWeatherTool],
+});
