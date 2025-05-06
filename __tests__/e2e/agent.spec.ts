@@ -63,7 +63,9 @@ describe('Agent', () => {
         'You are a friendly assistant that helps users with daily tasks.',
     });
     const response = await agent.getResponse({
-      input: 'Respond exactly with "Hello world!"',
+      messages: [
+        { role: 'user', content: 'Respond exactly with "Hello world!"' },
+      ],
       model: DEFAULT_AWS_ANTHROPIC_MODEL,
       provider,
     });
@@ -73,7 +75,7 @@ describe('Agent', () => {
 
   it('should be able to get a response with a tool', async () => {
     const response = await mockWeatherAgent.getResponse({
-      input: 'What is the weather in Tokyo?',
+      messages: [{ role: 'user', content: 'What is the weather in Tokyo?' }],
       model: DEFAULT_AWS_ANTHROPIC_MODEL,
       provider,
     });
@@ -108,7 +110,9 @@ describe('Agent', () => {
       degreesCelsius: z.number(),
     });
     const response = await mockWeatherAgent.getResponse({
-      input: 'What is the weather in Tokyo in Celsius?',
+      messages: [
+        { role: 'user', content: 'What is the weather in Tokyo in Celsius?' },
+      ],
       model: DEFAULT_AWS_ANTHROPIC_MODEL,
       provider,
       jsonSchema: zodToJsonSchema(responseSchema),

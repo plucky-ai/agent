@@ -35,7 +35,7 @@ export class Agent {
   }
 
   async getResponse(options: {
-    input: string;
+    messages: InputMessage[];
     provider: BaseProvider;
     model: string;
     userId?: string;
@@ -44,18 +44,13 @@ export class Agent {
     maxTokens?: number;
     maxTurns?: number;
   }): Promise<Response> {
-    const { input, userId, sessionId, jsonSchema, provider, model } = options;
+    const { messages, userId, sessionId, jsonSchema, provider, model } =
+      options;
     const outputMessages: OutputMessage[] = [];
     const maxTokens = options.maxTokens ?? 10000;
     const maxTurns = options.maxTurns ?? 5;
     let turns = 0;
     let tokens = 0;
-    const messages: InputMessage[] = [
-      {
-        role: 'user',
-        content: input,
-      },
-    ];
     const trace = this.observer.trace({
       input: {
         messages,
@@ -125,7 +120,7 @@ ${JSON.stringify(jsonSchema, null, 2)}
     if (jsonSchema) {
       const result = await this.getValidatedJsonResponse({
         instructions: this.instructions ?? '',
-        originalInput: input,
+        originalInput: JSON.stringify(messages),
         originalResult: selectLastText(
           messages.map((m) => ({
             role: m.role,
