@@ -122,7 +122,7 @@ ${JSON.stringify(jsonSchema, null, 2)}
         instructions: this.instructions ?? '',
         originalInput: JSON.stringify(messages),
         originalResult: selectLastText(
-          messages.map((m) => ({
+          outputMessages.map((m) => ({
             role: m.role,
             content: m.content,
           })),
@@ -215,7 +215,7 @@ ${JSON.stringify(jsonSchema, null, 2)}
     const outputMessages = options.outputMessages ?? [];
 
     const lastText =
-      outputMessages.length === 0
+      attempts === 0
         ? originalResult
         : selectLastText(
             outputMessages.map((m) => ({
@@ -228,35 +228,37 @@ ${JSON.stringify(jsonSchema, null, 2)}
     if (isValid) {
       return lastText;
     }
-    outputMessages.push({
-      type: 'message',
-      role: 'user',
-      content: `The previous JSON response was invalid and returned the below errors. Please return a valid JSON object that matches the given schema. Respond only with the JSON object without any commentary.
-<json_output_schema>
-${JSON.stringify(jsonSchema, null, 2)}
-</json_output_schema>
+    if (attempts > 0) {
+      outputMessages.push({
+        type: 'message',
+        role: 'user',
+        content: `The previous JSON response was invalid and returned the below errors. Please return a valid JSON object that matches the given schema. Respond only with the JSON object without any commentary.
 <errors>
 ${errors.join('\n')}
 </errors>`,
-      tokens_used: 0,
-    });
+        tokens_used: 0,
+      });
+    }
+
     if (attempts > 1) {
       throw new Error(`Invalid JSON: ${lastText.slice(0, 100)}`);
     }
     const messages: InputMessage[] = [
       {
         role: 'user',
-        content: `Below is the context of my original request. Please use this context to fix the JSON response.
-
+        content: `Below is the context of my original request. Please use this context to fix the invalid JSON response. Please return a valid JSON object that matches the given schema. Respond only with the JSON object without any commentary.
 <instructions>
 ${instructions}
 </instructions>
 <original_user_input>
 ${originalInput}
 </original_user_input>
-<original_json_response>
+<json_output_schema>
+${JSON.stringify(jsonSchema, null, 2)}
+</json_output_schema>
+<invalid_json_response>
 ${originalResult}
-</original_json_response>
+</invalid_json_response>
 `,
       },
       ...outputMessages.map((m) => ({
@@ -264,6 +266,7 @@ ${originalResult}
         content: m.content,
       })),
     ];
+    console.log(messages);
     const outputMessage = await provider.fetchMessage({
       system: `You are a JSON validator. You will be given a JSON response and a JSON schema. You will return a valid JSON object that matches the schema.`,
       messages,

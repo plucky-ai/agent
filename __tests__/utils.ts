@@ -3,9 +3,9 @@ import { Agent } from '../src/Agent.js';
 import { Tool } from '../src/Tool.js';
 export const mockWeatherTool = new Tool(
   {
-    name: 'get_weather',
+    name: 'get_current_weather',
     description:
-      'Get the weather in a location using AccuWeather. Call this when a user asks for the weather.',
+      'Get the current weather in a location. Call this when a user asks for the weather.',
     inputSchema: z.object({
       location: z.string(),
     }),
