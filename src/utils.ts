@@ -124,3 +124,9 @@ export function selectAllText(messages: OutputMessage[]): string {
     })
     .join('\n\n');
 }
+
+export function selectJsonInText(text: string): string {
+  const jsonRegex = /\{[^{}]*\}/g;
+  const match = text.match(jsonRegex);
+  return match ? match[0] : '';
+}

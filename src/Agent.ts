@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
+import { JsonValidator } from './JsonValidator.js';
 import { Observation } from './Observation.js';
-import { Observer } from './Observer.js';
 import { BaseProvider } from './providers/BaseProvider.js';
 import { Tool } from './Tool.js';
 import {
@@ -18,7 +18,6 @@ import {
 export class Agent {
   private readonly tools: Tool[];
   private readonly instructions: string | undefined;
-  private readonly observer: Observer;
   constructor(options: {
     instructions?: string;
     tools?: Tool[];
@@ -29,36 +28,24 @@ export class Agent {
   }) {
     this.instructions = options.instructions;
     this.tools = options.tools ?? [];
-    this.observer = Observer.createFromOptions({
-      langfuse: options.langfuse,
-    });
   }
 
   async getResponse(options: {
+    observation?: Observation;
     messages: InputMessage[];
     provider: BaseProvider;
     model: string;
-    userId?: string;
-    sessionId?: string;
     jsonSchema?: unknown;
     maxTokens?: number;
     maxTurns?: number;
   }): Promise<Response> {
-    const { messages, userId, sessionId, jsonSchema, provider, model } =
-      options;
+    const { messages, jsonSchema, provider, model } = options;
+    const observation = options.observation ?? new Observation();
     const outputMessages: OutputMessage[] = [];
     const maxTokens = options.maxTokens ?? 10000;
     const maxTurns = options.maxTurns ?? 5;
     let turns = 0;
     let tokens = 0;
-    const trace = this.observer.trace({
-      input: {
-        messages,
-        jsonSchema,
-      },
-      userId,
-      sessionId,
-    });
     let systemMessage = this.instructions;
     if (jsonSchema) {
       systemMessage += `
@@ -97,7 +84,7 @@ ${JSON.stringify(jsonSchema, null, 2)}
           }),
         model,
         messages: allMessages,
-        observation: trace,
+        observation,
         maxTokens: maxTokens - tokens,
         tools: this.tools,
       });
@@ -108,41 +95,34 @@ ${JSON.stringify(jsonSchema, null, 2)}
       const toolMessage = await this.runTool({
         toolUseContentBlock,
         messages: allMessages,
-        observation: trace,
+        observation,
       });
       outputMessages.push(toolMessage);
     }
-    trace.end({
-      output: {
-        messages: outputMessages,
-      },
-    });
     if (jsonSchema) {
-      const result = await this.getValidatedJsonResponse({
-        instructions: this.instructions ?? '',
-        originalInput: JSON.stringify(messages),
-        originalResult: selectLastText(
-          outputMessages.map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
-        ),
-        jsonSchema,
+      const validator = new JsonValidator({
         model,
-        observation: trace,
+        jsonSchema,
         provider,
-        maxTokens: maxTokens - tokens,
+        observation,
+        maxTokens,
       });
-      outputMessages.push({
-        type: 'message',
-        role: 'assistant',
-        content: result,
-        tokens_used: 0,
-      });
+      const { output: validationOutput, output_text } =
+        await validator.validate({
+          instructions: this.instructions ?? '',
+          input: JSON.stringify(messages),
+          result: selectLastText(
+            outputMessages.map((m) => ({
+              role: m.role,
+              content: m.content,
+            })),
+          ),
+        });
+      outputMessages.push(...validationOutput);
       return {
         type: 'response',
         output: outputMessages,
-        output_text: result,
+        output_text,
         tokens_used: tokens,
       };
     }
