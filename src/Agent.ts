@@ -223,10 +223,15 @@ ${JSON.stringify(jsonSchema, null, 2)}
               content: m.content,
             })),
           ).trim();
+    // Select text between first and last brackets
+    const selected = lastText.slice(
+      lastText.indexOf('{'),
+      lastText.lastIndexOf('}') + 1,
+    );
     // Clean the text by removing newlines and handling escaped characters
-    const { isValid, errors } = await isValidJson(lastText, jsonSchema);
+    const { isValid, errors } = await isValidJson(selected, jsonSchema);
     if (isValid) {
-      return lastText;
+      return JSON.stringify(JSON.parse(selected));
     }
     if (attempts > 0) {
       outputMessages.push({
@@ -266,7 +271,6 @@ ${originalResult}
         content: m.content,
       })),
     ];
-    console.log(messages);
     const outputMessage = await provider.fetchMessage({
       system: `You are a JSON validator. You will be given a JSON response and a JSON schema. You will return a valid JSON object that matches the schema.`,
       messages,
