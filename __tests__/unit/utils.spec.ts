@@ -22,4 +22,17 @@ describe('selectJsonInText', () => {
     const result = selectJsonInText(text);
     expect(result).toBe('');
   });
+  it('should return complex JSON objects', () => {
+    const expectedJson = {
+      foo: {
+        bar: {
+          fizz: 'buzz',
+        },
+      },
+    };
+    const stringified = JSON.stringify(expectedJson, null, 2);
+    const text = `This is your JSON: ${stringified}`;
+    const result = selectJsonInText(text);
+    expect(result).toBe(stringified);
+  });
 });

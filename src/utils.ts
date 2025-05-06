@@ -126,7 +126,16 @@ export function selectAllText(messages: OutputMessage[]): string {
 }
 
 export function selectJsonInText(text: string): string {
-  const jsonRegex = /\{[^{}]*\}/g;
-  const match = text.match(jsonRegex);
-  return match ? match[0] : '';
+  const firstBracket = text.indexOf('{');
+  const lastBracket = text.lastIndexOf('}');
+
+  if (
+    firstBracket === -1 ||
+    lastBracket === -1 ||
+    firstBracket >= lastBracket
+  ) {
+    return '';
+  }
+
+  return text.slice(firstBracket, lastBracket + 1);
 }
