@@ -10,7 +10,8 @@
 		"vscode": {
 			"extensions": [
 				"esbenp.prettier-vscode",
-				"rvest.vs-code-prettier-eslint"
+				"rvest.vs-code-prettier-eslint",
+				"vitest.explorer"
 			]
 		}
 	},
