@@ -19,7 +19,7 @@ export class JsonValidator {
     model: string;
     jsonSchema: unknown;
     provider: BaseProvider;
-    observation: Observation;
+    observation?: Observation;
     maxTokens?: number;
     maxAttempts?: number;
   }) {
@@ -30,7 +30,7 @@ export class JsonValidator {
     this.inputMessages = [];
     this.outputMessages = [];
     this.tokensUsed = 0;
-    this.observation = options.observation || new Observation();
+    this.observation = options.observation ?? new Observation();
     this.maxTokens = options.maxTokens ?? 2000;
     this.maxAttempts = options.maxAttempts ?? 2;
     this.attempts = 0;
@@ -61,9 +61,7 @@ export class JsonValidator {
     output_text: string;
   }> {
     this.attempts++;
-    if (this.attempts > this.maxAttempts) {
-      throw new Error(`Unable to validate JSON: ${input.slice(0, 100)}`);
-    }
+
     const selected = selectJsonInText(input);
     const { isValid, errors } = await isValidJson(selected, this.jsonSchema);
     if (isValid) {
@@ -71,6 +69,9 @@ export class JsonValidator {
         output: this.outputMessages,
         output_text: selected,
       };
+    }
+    if (this.attempts > this.maxAttempts) {
+      throw new Error(`Unable to validate JSON: ${input.slice(0, 100)}`);
     }
     this.addErrorInputMessage(errors);
 
