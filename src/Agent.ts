@@ -204,18 +204,13 @@ ${JSON.stringify(jsonSchema, null, 2)}
     let tokens = options.tokens ?? 0;
     const outputMessages = options.outputMessages ?? [];
 
-    const lastText = selectLastText(inputMessages.concat(outputMessages));
+    const lastText = selectLastText(
+      inputMessages.concat(outputMessages),
+    ).trim();
     // Clean the text by removing newlines and handling escaped characters
-    const cleaned = lastText
-      .replace(/\n/g, '') // Remove newlines
-      .replace(/\\n/g, '') // Remove escaped newlines
-      .replace(/\\"/g, '"') // Handle escaped quotes
-      .replace(/\\\\/g, '\\') // Handle double escaped backslashes
-      .trim(); // Remove any leading/trailing whitespace
-    const { isValid, errors } = await isValidJson(cleaned, jsonSchema);
-    console.log('cleaned', cleaned);
+    const { isValid, errors } = await isValidJson(lastText, jsonSchema);
     if (isValid) {
-      return cleaned;
+      return lastText;
     }
     outputMessages.push({
       type: 'message',
@@ -230,7 +225,7 @@ ${errors}
       tokens_used: 0,
     });
     if (attempts > 1) {
-      throw new Error(`Invalid JSON: ${cleaned.slice(0, 100)}`);
+      throw new Error(`Invalid JSON: ${lastText.slice(0, 100)}`);
     }
     const outputMessage = await provider.fetchMessage({
       system: `You are a JSON validator. You will be given a JSON response and a JSON schema. You will return a valid JSON object that matches the schema.`,
