@@ -16,6 +16,6 @@ export const mockWeatherTool = new Tool(
 );
 
 export const mockWeatherAgent = new Agent({
-  system: 'You help users with staying up to date with the weather.',
+  instructions: 'You help users with staying up to date with the weather.',
   tools: [mockWeatherTool],
 });

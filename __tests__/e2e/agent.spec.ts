@@ -59,15 +59,11 @@ describe('Agent', () => {
 
   it('should be able to get a response', async () => {
     const agent = new Agent({
-      system: 'You are a friendly assistant that helps users with daily tasks.',
+      instructions:
+        'You are a friendly assistant that helps users with daily tasks.',
     });
     const response = await agent.getResponse({
-      messages: [
-        {
-          role: 'user',
-          content: 'Respond exactly with "Hello world!"',
-        },
-      ],
+      input: 'Respond exactly with "Hello world!"',
       model: DEFAULT_AWS_ANTHROPIC_MODEL,
       provider,
     });
@@ -77,7 +73,7 @@ describe('Agent', () => {
 
   it('should be able to get a response with a tool', async () => {
     const response = await mockWeatherAgent.getResponse({
-      messages: [{ role: 'user', content: 'What is the weather in Tokyo?' }],
+      input: 'What is the weather in Tokyo?',
       model: DEFAULT_AWS_ANTHROPIC_MODEL,
       provider,
     });
@@ -91,18 +87,15 @@ describe('Agent', () => {
       degreesCelsius: z.number(),
     });
     const result = await mockWeatherAgent.getValidatedJsonResponse({
-      inputMessages: [
-        { role: 'user', content: 'What is the weather in Tokyo in Celsius?' },
-        {
-          role: 'assistant',
-          content: '{"degreesCelsius": 20',
-        },
-      ],
+      originalResult: '{"degreesCelsius": 20',
       model: DEFAULT_AWS_ANTHROPIC_MODEL,
       provider,
       jsonSchema: zodToJsonSchema(responseSchema),
       observation: new Observation(),
       maxTokens: 2000,
+      originalInput: 'What is the weather in Tokyo?',
+      instructions:
+        'You are a weather agent that returns the weather in Celsius.',
     });
     expect(result).toBeDefined();
     const parsed = JSON.parse(result);
@@ -115,9 +108,7 @@ describe('Agent', () => {
       degreesCelsius: z.number(),
     });
     const response = await mockWeatherAgent.getResponse({
-      messages: [
-        { role: 'user', content: 'What is the weather in Tokyo in Celsius?' },
-      ],
+      input: 'What is the weather in Tokyo in Celsius?',
       model: DEFAULT_AWS_ANTHROPIC_MODEL,
       provider,
       jsonSchema: zodToJsonSchema(responseSchema),

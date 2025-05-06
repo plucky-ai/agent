@@ -73,7 +73,7 @@ export async function isValidJson(
   jsonSchema: unknown,
 ): Promise<{
   isValid: boolean;
-  errors: string;
+  errors: string[];
 }> {
   try {
     const parsed = JSON.parse(content);
@@ -82,11 +82,11 @@ export async function isValidJson(
     const valid = await validate(parsed);
     return {
       isValid: Boolean(valid),
-      errors: String(validate.errors),
+      errors: validate.errors?.map((error) => error.message ?? '') ?? [],
     };
   } catch (e) {
     if (e instanceof SyntaxError) {
-      return { isValid: false, errors: String(e) };
+      return { isValid: false, errors: [String(e)] };
     }
     throw e;
   }

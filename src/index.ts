@@ -4,10 +4,18 @@ export { Observation } from './Observation.js';
 export { AWSAnthropicProvider } from './providers/AWSAnthropicProvider.js';
 export { Tool } from './Tool.js';
 export type {
-  TextContentBlock,
-  ToolUseContentBlock,
-  ToolResultContentBlock,
+  ContentBlock,
+  ContentBlockSchema,
   InputMessage,
+  InputMessageSchema,
   OutputMessage,
+  OutputMessageSchema,
   Response,
+  ResponseSchema,
+  TextContentBlock,
+  TextContentBlockSchema,
+  ToolResultContentBlock,
+  ToolResultContentBlockSchema,
+  ToolUseContentBlock,
+  ToolUseContentBlockSchema,
 } from './types.js';

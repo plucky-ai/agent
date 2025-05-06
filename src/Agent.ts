@@ -17,17 +17,17 @@ import {
 } from './utils.js';
 export class Agent {
   private readonly tools: Tool[];
-  private readonly system: string | undefined;
+  private readonly instructions: string | undefined;
   private readonly observer: Observer;
   constructor(options: {
-    system?: string;
+    instructions?: string;
     tools?: Tool[];
     langfuse?: {
       publicKey: string;
       secretKey: string;
     };
   }) {
-    this.system = options.system;
+    this.instructions = options.instructions;
     this.tools = options.tools ?? [];
     this.observer = Observer.createFromOptions({
       langfuse: options.langfuse,
@@ -35,7 +35,7 @@ export class Agent {
   }
 
   async getResponse(options: {
-    messages: InputMessage[];
+    input: string;
     provider: BaseProvider;
     model: string;
     userId?: string;
@@ -44,13 +44,18 @@ export class Agent {
     maxTokens?: number;
     maxTurns?: number;
   }): Promise<Response> {
-    const { messages, userId, sessionId, jsonSchema, provider, model } =
-      options;
+    const { input, userId, sessionId, jsonSchema, provider, model } = options;
     const outputMessages: OutputMessage[] = [];
     const maxTokens = options.maxTokens ?? 10000;
     const maxTurns = options.maxTurns ?? 5;
     let turns = 0;
     let tokens = 0;
+    const messages: InputMessage[] = [
+      {
+        role: 'user',
+        content: input,
+      },
+    ];
     const trace = this.observer.trace({
       input: {
         messages,
@@ -59,7 +64,7 @@ export class Agent {
       userId,
       sessionId,
     });
-    let systemMessage = this.system;
+    let systemMessage = this.instructions;
     if (jsonSchema) {
       systemMessage += `
 In your final message, you must return only a JSON object that matches the below schema with no other commentary.
@@ -119,8 +124,14 @@ ${JSON.stringify(jsonSchema, null, 2)}
     });
     if (jsonSchema) {
       const result = await this.getValidatedJsonResponse({
-        inputMessages: messages,
-        outputMessages,
+        instructions: this.instructions ?? '',
+        originalInput: input,
+        originalResult: selectLastText(
+          messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+        ),
         jsonSchema,
         model,
         observation: trace,
@@ -182,8 +193,10 @@ ${JSON.stringify(jsonSchema, null, 2)}
   }
   async getValidatedJsonResponse(
     options: {
+      instructions: string;
       jsonSchema: unknown;
-      inputMessages: InputMessage[];
+      originalResult: string;
+      originalInput: string;
       outputMessages?: OutputMessage[];
       model: string;
       observation: Observation;
@@ -196,17 +209,25 @@ ${JSON.stringify(jsonSchema, null, 2)}
     const {
       jsonSchema,
       model,
-      inputMessages,
+      originalResult,
       observation,
       provider,
       maxTokens,
+      instructions,
+      originalInput,
     } = options;
     let tokens = options.tokens ?? 0;
     const outputMessages = options.outputMessages ?? [];
 
-    const lastText = selectLastText(
-      inputMessages.concat(outputMessages),
-    ).trim();
+    const lastText =
+      outputMessages.length === 0
+        ? originalResult
+        : selectLastText(
+            outputMessages.map((m) => ({
+              role: m.role,
+              content: m.content,
+            })),
+          ).trim();
     // Clean the text by removing newlines and handling escaped characters
     const { isValid, errors } = await isValidJson(lastText, jsonSchema);
     if (isValid) {
@@ -220,21 +241,37 @@ ${JSON.stringify(jsonSchema, null, 2)}
 ${JSON.stringify(jsonSchema, null, 2)}
 </json_output_schema>
 <errors>
-${errors}
+${errors.join('\n')}
 </errors>`,
       tokens_used: 0,
     });
     if (attempts > 1) {
       throw new Error(`Invalid JSON: ${lastText.slice(0, 100)}`);
     }
+    const messages: InputMessage[] = [
+      {
+        role: 'user',
+        content: `Below is the context of my original request. Please use this context to fix the JSON response.
+
+<instructions>
+${instructions}
+</instructions>
+<original_user_input>
+${originalInput}
+</original_user_input>
+<original_json_response>
+${originalResult}
+</original_json_response>
+`,
+      },
+      ...outputMessages.map((m) => ({
+        role: m.role,
+        content: m.content,
+      })),
+    ];
     const outputMessage = await provider.fetchMessage({
       system: `You are a JSON validator. You will be given a JSON response and a JSON schema. You will return a valid JSON object that matches the schema.`,
-      messages: inputMessages.concat(
-        outputMessages.map((m) => ({
-          role: m.role,
-          content: m.content,
-        })),
-      ),
+      messages,
       model,
       maxTokens: maxTokens - tokens,
       observation,
@@ -244,7 +281,7 @@ ${errors}
     outputMessages.push(outputMessage);
     return this.getValidatedJsonResponse(
       {
-        inputMessages,
+        originalResult,
         outputMessages,
         jsonSchema,
         model,
@@ -252,6 +289,8 @@ ${errors}
         provider,
         maxTokens: options.maxTokens,
         tokens,
+        instructions: options.instructions,
+        originalInput: options.originalInput,
       },
       attempts + 1,
     );
