@@ -6,9 +6,6 @@ services:
       context: ..
       dockerfile: .devcontainer/Dockerfile
 
-    depends_on:
-      - "db"
-
     volumes:
       - .:/workspace/.devcontainer
       - workspace:/workspace
