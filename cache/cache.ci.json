@@ -1,5 +1,5 @@
 {
-  "ccc1789bf1403281276b59e320b2ba218e1bfe23b0defcf52e6110c5b5ff72bf": {
+  "4329b94e639b530edf7cc2c87e1a063ee3a9d4f25c483e7629b638365937dcd4": {
     "role": "assistant",
     "type": "message",
     "content": [
@@ -10,7 +10,7 @@
     ],
     "tokens_used": 20
   },
-  "1f4c88b33e12517606e79b946ab707b44e4e1a4a2aa0478d7f67dcca74c4f4b7": {
+  "509e1eefdfa5b9eff46be318378f46cfa05cbd9f1dafa036cf7858fed21fe100": {
     "role": "assistant",
     "type": "message",
     "content": [
@@ -21,13 +21,13 @@
     ],
     "tokens_used": 73
   },
-  "fed85e9fa46e037b2a50582a353bbf436ba21de34224b14ff0c0e30da980f49d": {
+  "7e4397c9fe3be1cd9703a155ec0d9df35f8584c0b095c234b924ad3bf97e4801": {
     "role": "assistant",
     "type": "message",
     "content": [
       {
         "type": "tool_use",
-        "id": "call_e6MzmRL6UGZ4w5cq6L1dmWht",
+        "id": "call_1PWpOnbEiSOvRXgJak8BQrCE",
         "name": "get_current_weather",
         "input": {
           "location": "Tokyo"
@@ -36,24 +36,24 @@
     ],
     "tokens_used": 117
   },
-  "1809a10da9847536f36d62e705a321fa8aa51c641bd53925e6c5ce18bc1691c0": {
+  "85a4cfd51b7d2aefb8e7fcc7cd52693c4ba7c8428dbe3bc8ccb70269bd88717f": {
     "role": "assistant",
     "type": "message",
     "content": [
       {
         "type": "text",
-        "text": "The current weather in Tokyo is 20°C."
+        "text": "The current weather in Tokyo is 20 degrees Celsius."
       }
     ],
-    "tokens_used": 146
+    "tokens_used": 147
   },
-  "c677aa8e49e7310ecca3eaf51c107cbc3b35a0b6cd71933da8f9f5dba28d4b30": {
+  "67bb91fec799313dd51c3b32a50c6c19240117234de3a7ab96b24bdc596e749c": {
     "role": "assistant",
     "type": "message",
     "content": [
       {
         "type": "tool_use",
-        "id": "call_supS6WwsqLh4Yo2As8TaYxvD",
+        "id": "call_dhs16iF0jfOGGx2HlG78FlNC",
         "name": "get_current_weather",
         "input": {
           "location": "Tokyo"
@@ -62,18 +62,18 @@
     ],
     "tokens_used": 206
   },
-  "65f59805f6ccea0795b3dddbe9d1d315daf0c22cee66b4b3a9f06f6c5a627a85": {
+  "85352879ece9f6580aa54dce32770b6195dfbd97b3a2f5a84ba0f9b9fc55518f": {
     "role": "assistant",
     "type": "message",
     "content": [
       {
         "type": "text",
-        "text": "{\"degreesCelsius\":20}"
+        "text": "```json\n{\n  \"degreesCelsius\": 20\n}\n```"
       }
     ],
-    "tokens_used": 232
+    "tokens_used": 240
   },
-  "a7e42680f7054e0c75fd27fa7036f97efa60a8c0f34b5c9162f68a5a5b9fbc2b": {
+  "839b3ac43caab5e604265076a5f230235a4c7268faca18ca75b7385f09a7f1dc": {
     "role": "assistant",
     "type": "message",
     "content": [
