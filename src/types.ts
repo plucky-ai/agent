@@ -39,6 +39,7 @@ export const ContentBlockSchema = z.union([
 ]);
 
 export const InputMessageSchema = z.object({
+  id: z.string().optional(),
   role: z.enum(['user', 'assistant']),
   content: z.union([z.string(), z.array(ContentBlockSchema)]),
 });

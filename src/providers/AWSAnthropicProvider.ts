@@ -25,30 +25,24 @@ export class AWSAnthropicProvider extends BaseProvider {
       awsRegion: options.awsRegion,
     });
   }
-  async fetchMessage(options: FetchRawMessageOptions): Promise<OutputMessage> {
-    const { messages, system, model, maxTokens } = options;
+
+  async fetchRawMessage(
+    options: FetchRawMessageOptions,
+  ): Promise<OutputMessage> {
     const args: MessageCreateParams = {
-      system,
-      model,
-      messages: messages as MessageCreateParams['messages'],
-      max_tokens: maxTokens,
+      system: options.system,
+      model: options.model,
+      messages: options.messages as MessageCreateParams['messages'],
+      max_tokens: options.maxTokens,
       tools: options.tools?.map((tool) => ({
         name: tool.name,
         description: tool.description,
         input_schema: tool.getInputJsonSchema() as Tool.InputSchema,
       })),
     };
-    const generation = options.observation.generation({
-      input: messages,
-      model,
-      modelParameters: {
-        maxTokens,
-      },
-    });
-    const response = await this.fetchRawMessage(args);
-    generation.end({
-      output: response,
-    });
+
+    const response = await this.anthropic.messages.create(args);
+
     return {
       type: 'message',
       role: 'assistant',
@@ -63,18 +57,5 @@ export class AWSAnthropicProvider extends BaseProvider {
             )[]),
       tokens_used: response.usage.output_tokens + response.usage.input_tokens,
     };
-  }
-  async fetchRawMessage(
-    args: MessageCreateParams,
-  ): Promise<Anthropic.Messages.Message> {
-    if (this.cache) {
-      const cachedResult = await this.cache.get(args);
-      if (cachedResult) return cachedResult as Anthropic.Messages.Message;
-    }
-    const response = await this.anthropic.messages.create(args);
-    if (this.cache) {
-      await this.cache.set(args, response);
-    }
-    return response;
   }
 }

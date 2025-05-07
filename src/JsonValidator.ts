@@ -71,7 +71,7 @@ export class JsonValidator {
       };
     }
     if (this.attempts > this.maxAttempts) {
-      throw new Error(`Unable to validate JSON: ${input.slice(0, 100)}`);
+      throw new Error(`Unable to validate JSON: ${input}`);
     }
     this.addErrorInputMessage(errors);
     const outputMessage = await this.provider.fetchMessage({

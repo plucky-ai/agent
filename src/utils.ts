@@ -59,13 +59,13 @@ export function zodToJsonSchema(schema: z.ZodSchema): JsonSchema7Type {
   ] as JsonSchema7Type;
 }
 
-export function selectToolUseBlock(
+export function selectToolUseBlocks(
   content: string | ContentBlock[],
-): ToolUseContentBlock | null {
+): ToolUseContentBlock[] {
   if (typeof content === 'string') {
-    return null;
+    return [];
   }
-  return content.find((block) => block.type === 'tool_use') ?? null;
+  return content.filter((block) => block.type === 'tool_use');
 }
 
 export async function isValidJson(
