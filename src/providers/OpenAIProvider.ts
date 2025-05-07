@@ -14,7 +14,6 @@ export class OpenAIProvider extends BaseProvider {
   constructor(options: { apiKey: string; cache?: LocalCache }) {
     super({
       cache: options.cache,
-      version: '4',
     });
     if (!options.apiKey && !this.cache) {
       throw new Error('No API key or cache provided');
