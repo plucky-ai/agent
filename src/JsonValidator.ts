@@ -62,18 +62,23 @@ export class JsonValidator {
   }> {
     this.attempts++;
 
-    const selected = selectJsonInText(input);
-    const { isValid, errors } = await isValidJson(selected, this.jsonSchema);
-    if (isValid) {
-      return {
-        output: this.outputMessages,
-        output_text: selected,
-      };
+    const allJson = selectJsonInText(input);
+    if (allJson.length > 0) {
+      const target = allJson[allJson.length - 1] ?? '';
+      const { isValid, errors } = await isValidJson(target, this.jsonSchema);
+      if (isValid) {
+        return {
+          output: this.outputMessages,
+          output_text: target,
+        };
+      }
+      this.addErrorInputMessage(errors);
+    } else {
+      this.addErrorInputMessage(['No JSON found in text']);
     }
     if (this.attempts > this.maxAttempts) {
       throw new Error(`Unable to validate JSON: ${input}`);
     }
-    this.addErrorInputMessage(errors);
     const outputMessage = await this.provider.fetchMessage({
       system: this.instructions,
       messages: this.getAllMessages(),

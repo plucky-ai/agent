@@ -125,17 +125,30 @@ export function selectAllText(messages: OutputMessage[]): string {
     .join('\n\n');
 }
 
-export function selectJsonInText(text: string): string {
-  const firstBracket = text.indexOf('{');
-  const lastBracket = text.lastIndexOf('}');
-
-  if (
-    firstBracket === -1 ||
-    lastBracket === -1 ||
-    firstBracket >= lastBracket
-  ) {
-    return '';
+export function selectJsonInText(text: string): string[] {
+  // Find positions of all open and closing brackets
+  const groups: string[] = [];
+  let openBracketCount = 0;
+  let start = 0;
+  for (let i = 0; i < text.length; i++) {
+    let closed = false;
+    if (text[i] === '{') {
+      if (openBracketCount === 0) {
+        start = i;
+      }
+      openBracketCount++;
+    }
+    if (text[i] === '}') {
+      openBracketCount--;
+      if (openBracketCount === 0) {
+        closed = true;
+      }
+    }
+    if (closed) {
+      groups.push(text.slice(start, i + 1));
+      closed = false;
+    }
   }
-
-  return text.slice(firstBracket, lastBracket + 1);
+  // Group brackets to find multiple JSON objects
+  return groups;
 }

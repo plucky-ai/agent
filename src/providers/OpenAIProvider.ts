@@ -10,15 +10,20 @@ import {
 import { BaseProvider } from './BaseProvider.js';
 
 export class OpenAIProvider extends BaseProvider {
-  private readonly openai: OpenAI;
+  private readonly openai: OpenAI | null;
   constructor(options: { apiKey: string; cache?: LocalCache }) {
     super({
       cache: options.cache,
       version: '4',
     });
-    this.openai = new OpenAI({
-      apiKey: options.apiKey,
-    });
+    if (!options.apiKey && !this.cache) {
+      throw new Error('No API key or cache provided');
+    }
+    this.openai = options.apiKey
+      ? new OpenAI({
+          apiKey: options.apiKey,
+        })
+      : null;
   }
   async fetchRawMessage(
     options: FetchRawMessageOptions,
@@ -85,6 +90,9 @@ export class OpenAIProvider extends BaseProvider {
         role: 'system',
         content: options.system,
       });
+    }
+    if (!this.openai) {
+      throw new Error('No OpenAI client');
     }
     const response = await this.openai.chat.completions.create({
       model: options.model,
