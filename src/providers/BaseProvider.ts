@@ -12,11 +12,6 @@ export class BaseProvider {
 
   async fetchMessage(options: FetchRawMessageOptions): Promise<OutputMessage> {
     const cacheKey = { version: this.version, ...options };
-    if (this.cache) {
-      const cachedResult = await this.cache.get(cacheKey);
-      if (cachedResult) return cachedResult as OutputMessage;
-    }
-
     const generation = options.observation.generation({
       input: options.messages,
       model: options.model,
@@ -24,6 +19,16 @@ export class BaseProvider {
         maxTokens: options.maxTokens,
       },
     });
+    if (this.cache) {
+      const cachedResult = await this.cache.get(cacheKey);
+      if (cachedResult) {
+        generation.end({
+          output: cachedResult,
+        });
+        return cachedResult as OutputMessage;
+      }
+    }
+
     const response = await this.fetchRawMessage(options);
     generation.end({
       output: response,
