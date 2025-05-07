@@ -39,7 +39,11 @@ export class AWSAnthropicProvider extends BaseProvider {
       })),
     };
     const generation = options.observation.generation({
-      inputs: args,
+      input: messages,
+      model,
+      modelParameters: {
+        maxTokens,
+      },
     });
     const response = await this.fetchRawMessage(args);
     generation.end({

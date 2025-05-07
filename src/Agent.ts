@@ -18,14 +18,7 @@ import {
 export class Agent {
   private readonly tools: Tool[];
   private readonly instructions: string | undefined;
-  constructor(options: {
-    instructions?: string;
-    tools?: Tool[];
-    langfuse?: {
-      publicKey: string;
-      secretKey: string;
-    };
-  }) {
+  constructor(options: { instructions?: string; tools?: Tool[] }) {
     this.instructions = options.instructions;
     this.tools = options.tools ?? [];
   }
@@ -36,13 +29,12 @@ export class Agent {
     provider: BaseProvider;
     model: string;
     jsonSchema?: unknown;
-    maxTokens?: number;
+    maxTokens: number;
     maxTurns?: number;
   }): Promise<Response> {
-    const { messages, jsonSchema, provider, model } = options;
+    const { messages, jsonSchema, provider, model, maxTokens } = options;
     const observation = options.observation ?? new Observation();
     const outputMessages: OutputMessage[] = [];
-    const maxTokens = options.maxTokens ?? 10000;
     const maxTurns = options.maxTurns ?? 5;
     let turns = 0;
     let tokens = 0;

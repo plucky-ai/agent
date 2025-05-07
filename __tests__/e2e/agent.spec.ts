@@ -1,5 +1,5 @@
 import path from 'path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import z from 'zod';
 
 import { Agent } from '../../src/Agent.js';
@@ -68,6 +68,7 @@ describe('Agent', () => {
       ],
       model: DEFAULT_AWS_ANTHROPIC_MODEL,
       provider,
+      maxTokens: 5000,
     });
     expect(response).toBeDefined();
     expect(response.output_text).toEqual('Hello world!');
@@ -78,6 +79,7 @@ describe('Agent', () => {
       messages: [{ role: 'user', content: 'What is the weather in Tokyo?' }],
       model: DEFAULT_AWS_ANTHROPIC_MODEL,
       provider,
+      maxTokens: 5000,
     });
     expect(response).toBeDefined();
     expect(response.output_text).toContain('Tokyo');
@@ -124,5 +126,28 @@ describe('Agent', () => {
     const parsed = JSON.parse(response.output_text);
     expect(parsed.degreesCelsius).toBe(20);
     expect(() => responseSchema.parse(parsed)).not.toThrow();
+  });
+
+  it('should trace each generation', async () => {
+    const observation = new Observation();
+    const generationSpy = vi.spyOn(observation, 'generation');
+    const agent = new Agent({
+      instructions: 'You are a helpful assistant.',
+    });
+    const response = await agent.getResponse({
+      messages: [
+        {
+          role: 'user',
+          content: 'Say "Hello world!" exactly, with no other commentary.',
+        },
+      ],
+      model: DEFAULT_AWS_ANTHROPIC_MODEL,
+      provider,
+      observation,
+      maxTokens: 1000,
+    });
+    expect(response).toBeDefined();
+    expect(response.output_text).toEqual('Hello world!');
+    expect(generationSpy).toHaveBeenCalledTimes(1);
   });
 });

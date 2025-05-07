@@ -6,10 +6,20 @@ export class Observation {
   constructor(options?: { langfuse: LangfuseObservationClient }) {
     this.langfuse = options?.langfuse ?? null;
   }
-  generation(input: unknown): Observation {
+  generation(options: {
+    input: unknown;
+    model?: string;
+    modelParameters?: {
+      maxTokens?: number;
+    };
+  }): Observation {
     if (this.langfuse) {
       return new Observation({
-        langfuse: this.langfuse.generation({ input }),
+        langfuse: this.langfuse.generation({
+          input: options.input,
+          model: options.model,
+          modelParameters: options.modelParameters,
+        }),
       });
     }
     return new Observation();

@@ -74,7 +74,6 @@ export class JsonValidator {
       throw new Error(`Unable to validate JSON: ${input.slice(0, 100)}`);
     }
     this.addErrorInputMessage(errors);
-
     const outputMessage = await this.provider.fetchMessage({
       system: this.instructions,
       messages: this.getAllMessages(),
