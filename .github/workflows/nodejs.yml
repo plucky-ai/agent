@@ -9,7 +9,7 @@ jobs:
       ENV: ci
     steps:
       - uses: actions/checkout@v4
-      - uses: volta-cli/action@v4
+
       - run: yarn
       - run: yarn lint --if-present
       - run: yarn prettier:check --if-present
