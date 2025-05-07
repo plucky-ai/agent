@@ -1,20 +1,87 @@
 {
-  "9044047c8f3df24865df617131babf020550dfa26960d322a3e79268694daae6": {
-    "id": "msg_bdrk_016AkPkhyzxv7Q61VvcVpu3Q",
-    "type": "message",
+  "ccc1789bf1403281276b59e320b2ba218e1bfe23b0defcf52e6110c5b5ff72bf": {
     "role": "assistant",
-    "model": "claude-3-sonnet-20240229",
+    "type": "message",
     "content": [
       {
         "type": "text",
-        "text": "The current temperature in Tokyo is 20 degrees Celsius, with a light breeze coming from the northeast. The forecast calls for mostly sunny skies today, making it a nice day to spend some time outdoors in Tokyo."
+        "text": "Hello! How can I assist you today?"
       }
     ],
-    "stop_reason": "end_turn",
-    "stop_sequence": null,
-    "usage": {
-      "input_tokens": 355,
-      "output_tokens": 51
-    }
+    "tokens_used": 20
+  },
+  "1f4c88b33e12517606e79b946ab707b44e4e1a4a2aa0478d7f67dcca74c4f4b7": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "Hello world!"
+      }
+    ],
+    "tokens_used": 73
+  },
+  "fed85e9fa46e037b2a50582a353bbf436ba21de34224b14ff0c0e30da980f49d": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "tool_use",
+        "id": "call_e6MzmRL6UGZ4w5cq6L1dmWht",
+        "name": "get_current_weather",
+        "input": {
+          "location": "Tokyo"
+        }
+      }
+    ],
+    "tokens_used": 117
+  },
+  "1809a10da9847536f36d62e705a321fa8aa51c641bd53925e6c5ce18bc1691c0": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "The current weather in Tokyo is 20°C."
+      }
+    ],
+    "tokens_used": 146
+  },
+  "c677aa8e49e7310ecca3eaf51c107cbc3b35a0b6cd71933da8f9f5dba28d4b30": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "tool_use",
+        "id": "call_supS6WwsqLh4Yo2As8TaYxvD",
+        "name": "get_current_weather",
+        "input": {
+          "location": "Tokyo"
+        }
+      }
+    ],
+    "tokens_used": 206
+  },
+  "65f59805f6ccea0795b3dddbe9d1d315daf0c22cee66b4b3a9f06f6c5a627a85": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"degreesCelsius\":20}"
+      }
+    ],
+    "tokens_used": 232
+  },
+  "a7e42680f7054e0c75fd27fa7036f97efa60a8c0f34b5c9162f68a5a5b9fbc2b": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "Hello world!"
+      }
+    ],
+    "tokens_used": 72
   }
 }
