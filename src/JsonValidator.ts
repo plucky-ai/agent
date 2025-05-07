@@ -85,7 +85,7 @@ export class JsonValidator {
       model: this.model,
       maxTokens: this.maxTokens - this.tokensUsed,
       observation: this.observation,
-      name: 'structure_json',
+      name: 'fix_json',
     });
     this.addTokensUsed(outputMessage.tokens_used);
     this.pushOutputMessage(outputMessage);

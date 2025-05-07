@@ -18,6 +18,7 @@ export class BaseProvider {
       modelParameters: {
         maxTokens: options.maxTokens,
       },
+      name: options.name,
     });
     if (this.cache) {
       const cachedResult = await this.cache.get(cacheKey);

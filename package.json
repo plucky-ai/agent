@@ -1,6 +1,6 @@
 {
   "name": "@plucky-ai/agent",
-  "version": "0.0.1-alpha.33",
+  "version": "0.0.1-alpha.34",
   "description": "Plucky's AI agentic framework.",
   "type": "module",
   "engines": {
