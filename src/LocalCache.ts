@@ -19,8 +19,8 @@ export class LocalCache {
         'Path and readPath or writePath cannot both be provided.',
       );
     }
-    this.readPath = readPath ?? path;
-    this.writePath = writePath ?? path;
+    this.readPath = readPath ?? (path as string);
+    this.writePath = writePath ?? (path as string);
     this.filesChecked = false;
   }
   async confirmFilesExist(): Promise<void> {
@@ -52,10 +52,10 @@ export class LocalCache {
     data[key] = value ?? null;
     await fs.writeFile(this.writePath, stringify(data));
   }
-  async getCacheData(): Promise<Record<string, unknown>> {
+  async getCacheData(): Promise<Record<string, unknown> | string> {
     await this.confirmFilesExist();
     const data = await fs.readFile(this.readPath, 'utf8');
-    return JSON.parse(data);
+    return parse(data);
   }
 }
 
@@ -64,6 +64,20 @@ function stringify(data: string | Record<string, unknown>): string {
     return data;
   }
   return JSON.stringify(data, null, 2);
+}
+
+function parse(data: string): Record<string, unknown> | string {
+  try {
+    return JSON.parse(data);
+  } catch (e) {
+    if (
+      e instanceof Error &&
+      e.message.includes('Unexpected end of JSON input')
+    ) {
+      return data;
+    }
+    throw e;
+  }
 }
 
 async function confirmCacheFileExists(filepath: string): Promise<void> {

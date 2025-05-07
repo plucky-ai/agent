@@ -3,11 +3,6 @@
 
 # But include these
 !dist/
-!dist/cjs/
-!dist/cjs/**/*
-!dist/esm/
-!dist/esm/**/*
-!dist/types/
-!dist/types/**/*
+!dist/**/*
 !package.json
 !README.md

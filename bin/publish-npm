@@ -2,10 +2,8 @@
 
 set -eux
 
-npm config set '//registry.npmjs.org/:_authToken' "$NPM_TOKEN"
-
 # Build the project
-npm run build
+npm run build:release
 
 # Get the version from package.json before changing directory
 VERSION="$(node -p "require('./package.json').version")"

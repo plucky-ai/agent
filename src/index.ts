@@ -1,5 +1,22 @@
 export { Agent } from './Agent.js';
 export { LocalCache } from './LocalCache.js';
+export { Observation } from './Observation.js';
 export { AWSAnthropicProvider } from './providers/AWSAnthropicProvider.js';
+export { OpenAIProvider } from './providers/OpenAIProvider.js';
 export { Tool } from './Tool.js';
-export type { Response } from './types.js';
+export type {
+  ContentBlock,
+  ContentBlockSchema,
+  InputMessage,
+  InputMessageSchema,
+  OutputMessage,
+  OutputMessageSchema,
+  Response,
+  ResponseSchema,
+  TextContentBlock,
+  TextContentBlockSchema,
+  ToolResultContentBlock,
+  ToolResultContentBlockSchema,
+  ToolUseContentBlock,
+  ToolUseContentBlockSchema,
+} from './types.js';

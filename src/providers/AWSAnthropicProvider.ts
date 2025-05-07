@@ -1,12 +1,11 @@
 import { AnthropicBedrock } from '@anthropic-ai/bedrock-sdk';
+import { Anthropic } from '@anthropic-ai/sdk/index.js';
 import type {
   MessageCreateParams,
-  MessageParam,
   Tool,
 } from '@anthropic-ai/sdk/resources/messages';
 import { LocalCache } from '../LocalCache.js';
 import { FetchRawMessageOptions, OutputMessage } from '../types.js';
-import { useCacheIfPresent } from '../utils.js';
 import { BaseProvider } from './BaseProvider.js';
 
 export class AWSAnthropicProvider extends BaseProvider {
@@ -26,32 +25,37 @@ export class AWSAnthropicProvider extends BaseProvider {
       awsRegion: options.awsRegion,
     });
   }
-  async fetchMessage(options: FetchRawMessageOptions): Promise<OutputMessage> {
-    const { messages, system, model } = options;
+
+  async fetchRawMessage(
+    options: FetchRawMessageOptions,
+  ): Promise<OutputMessage> {
     const args: MessageCreateParams = {
-      system,
-      model,
-      messages: messages as unknown as MessageParam[],
-      max_tokens: 1000,
+      system: options.system,
+      model: options.model,
+      messages: options.messages as MessageCreateParams['messages'],
+      max_tokens: options.maxTokens,
       tools: options.tools?.map((tool) => ({
         name: tool.name,
         description: tool.description,
-        input_schema: tool.getModelConfig().inputSchema as Tool.InputSchema,
+        input_schema: tool.getInputJsonSchema() as Tool.InputSchema,
       })),
     };
-    const generation = options.observation.generation({
-      inputs: args,
-    });
-    const getAnthropicMessage = useCacheIfPresent<
-      (args: MessageCreateParams) => Promise<OutputMessage>
-    >(this.anthropic.messages.create.bind(this.anthropic.messages), this.cache);
-    const response = await getAnthropicMessage(args);
-    generation.end({
-      output: response,
-    });
+
+    const response = await this.anthropic.messages.create(args);
+
     return {
+      type: 'message',
       role: 'assistant',
-      content: response.content,
+      content:
+        typeof response.content === 'string'
+          ? response.content
+          : (response.content.filter((block) =>
+              ['text', 'tool_use'].includes(block.type),
+            ) as (
+              | Anthropic.Messages.TextBlock
+              | Anthropic.Messages.ToolUseBlock
+            )[]),
+      tokens_used: response.usage.output_tokens + response.usage.input_tokens,
     };
   }
 }

@@ -1,11 +1,22 @@
-import { Ajv } from 'ajv';
+import { Ajv, AnySchema } from 'ajv';
 import { createHash } from 'crypto';
 import { z } from 'zod';
-import { zodToJsonSchema as zodToJsonSchemaRaw } from 'zod-to-json-schema';
+import {
+  JsonSchema7Type,
+  zodToJsonSchema as zodToJsonSchemaRaw,
+} from 'zod-to-json-schema';
 import { LocalCache } from './LocalCache.js';
-import { ContentBlock, OutputMessage, ToolUseBlock } from './types.js';
+import {
+  ContentBlock,
+  InputMessage,
+  OutputMessage,
+  ToolUseContentBlock,
+} from './types.js';
 
 export function getOrderedHash(args: unknown): string {
+  if (typeof args !== 'object' || args === null) {
+    return createHash('sha256').update(JSON.stringify(args)).digest('hex');
+  }
   const sortedArgs = Object.keys(args)
     .sort()
     .reduce((acc, key) => {
@@ -42,41 +53,50 @@ export function selectMessageText(message: OutputMessage): string {
   return text.text;
 }
 
-export function zodToJsonSchema(
-  schema: z.ZodSchema,
-): ReturnType<typeof zodToJsonSchemaRaw>['definitions'][string] {
-  return zodToJsonSchemaRaw(schema, 'mySchema').definitions['mySchema'];
+export function zodToJsonSchema(schema: z.ZodSchema): JsonSchema7Type {
+  return zodToJsonSchemaRaw(schema, 'mySchema')?.definitions?.[
+    'mySchema'
+  ] as JsonSchema7Type;
 }
 
-export function selectToolUseBlock(
+export function selectToolUseBlocks(
   content: string | ContentBlock[],
-): ToolUseBlock | null {
+): ToolUseContentBlock[] {
   if (typeof content === 'string') {
-    return null;
+    return [];
   }
-  return content.find((block) => block.type === 'tool_use');
+  return content.filter((block) => block.type === 'tool_use');
 }
 
-export function isValidJson(options: {
-  content: string;
-  jsonSchema: unknown;
-}): boolean {
+export async function isValidJson(
+  content: string,
+  jsonSchema: unknown,
+): Promise<{
+  isValid: boolean;
+  errors: string[];
+}> {
   try {
+    const parsed = JSON.parse(content);
     const ajv = new Ajv();
-    const validate = ajv.compile(options.jsonSchema);
-    const valid = validate(options.content);
-    return valid;
+    const validate = ajv.compile(jsonSchema as AnySchema);
+    const valid = await validate(parsed);
+    return {
+      isValid: Boolean(valid),
+      errors: validate.errors?.map((error) => error.message ?? '') ?? [],
+    };
   } catch (e) {
-    if (e instanceof Ajv.ValidationError) {
-      return false;
+    if (e instanceof SyntaxError) {
+      return { isValid: false, errors: [String(e)] };
     }
     throw e;
   }
 }
 
-export function selectLastText(options: { messages: OutputMessage[] }): string {
-  for (let i = 0; i < options.messages.length; i++) {
-    const message = options.messages[options.messages.length - 1 - i];
+export function selectLastText(
+  messages: (InputMessage | OutputMessage)[],
+): string {
+  for (let i = 0; i < messages.length; i++) {
+    const message = messages[messages.length - 1 - i];
     if (typeof message.content === 'string') {
       return message.content;
     }
@@ -90,8 +110,8 @@ export function selectLastText(options: { messages: OutputMessage[] }): string {
   throw new Error('No text found in messages');
 }
 
-export function selectAllText(options: { messages: OutputMessage[] }): string {
-  return options.messages
+export function selectAllText(messages: OutputMessage[]): string {
+  return messages
     .filter((message) => message.role === 'assistant')
     .map((message) => {
       if (typeof message.content === 'string') {
@@ -103,4 +123,32 @@ export function selectAllText(options: { messages: OutputMessage[] }): string {
         .join('\n\n');
     })
     .join('\n\n');
+}
+
+export function selectJsonInText(text: string): string[] {
+  // Find positions of all open and closing brackets
+  const groups: string[] = [];
+  let openBracketCount = 0;
+  let start = 0;
+  for (let i = 0; i < text.length; i++) {
+    let closed = false;
+    if (text[i] === '{') {
+      if (openBracketCount === 0) {
+        start = i;
+      }
+      openBracketCount++;
+    }
+    if (text[i] === '}') {
+      openBracketCount--;
+      if (openBracketCount === 0) {
+        closed = true;
+      }
+    }
+    if (closed) {
+      groups.push(text.slice(start, i + 1));
+      closed = false;
+    }
+  }
+  // Group brackets to find multiple JSON objects
+  return groups;
 }
