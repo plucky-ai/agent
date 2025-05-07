@@ -74,6 +74,7 @@ ${JSON.stringify(jsonSchema, null, 2)}
         observation,
         maxTokens: maxTokens - tokens,
         tools: this.tools,
+        name: `turn-${turns}`,
       });
       tokens += newMessage.tokens_used;
       outputMessages.push(newMessage);
