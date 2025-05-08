@@ -12,6 +12,7 @@ export class Observation {
     modelParameters?: {
       maxTokens?: number;
     };
+    name?: string;
   }): Observation {
     if (this.langfuse) {
       return new Observation({
@@ -19,6 +20,7 @@ export class Observation {
           input: options.input,
           model: options.model,
           modelParameters: options.modelParameters,
+          name: options.name,
         }),
       });
     }

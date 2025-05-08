@@ -2,6 +2,7 @@ export { Agent } from './Agent.js';
 export { LocalCache } from './LocalCache.js';
 export { Observation } from './Observation.js';
 export { AWSAnthropicProvider } from './providers/AWSAnthropicProvider.js';
+export { BaseProvider } from './providers/BaseProvider.js';
 export { OpenAIProvider } from './providers/OpenAIProvider.js';
 export { Tool } from './Tool.js';
 export type {

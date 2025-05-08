@@ -11,14 +11,25 @@ export class BaseProvider {
   }
 
   async fetchMessage(options: FetchRawMessageOptions): Promise<OutputMessage> {
-    const cacheKey = { version: this.version, ...options };
+    const { system, model, messages, tools, name, maxTokens } = options;
+    const cacheKey = {
+      version: this.version,
+      system,
+      model,
+      messages,
+      tools: tools?.map((tool) => tool.toCacheKey()),
+      name,
+      maxTokens,
+    };
     const generation = options.observation.generation({
       input: options.messages,
       model: options.model,
       modelParameters: {
         maxTokens: options.maxTokens,
       },
+      name: options.name,
     });
+
     if (this.cache) {
       const cachedResult = await this.cache.get(cacheKey);
       if (cachedResult) {

@@ -1,6 +1,6 @@
 {
   "name": "@plucky-ai/agent",
-  "version": "0.0.1-alpha.33",
+  "version": "0.0.1-alpha.36",
   "description": "Plucky's AI agentic framework.",
   "type": "module",
   "engines": {
@@ -11,16 +11,16 @@
   "module": "dist/index.js",
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.js",
       "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "default": "./dist/index.js",
+      "require": "./dist/index.js",
+      "import": "./dist/index.js"
     },
     "./utils": {
-      "require": "./dist/utils.js",
-      "import": "./dist/utils.js",
       "types": "./dist/utils.d.ts",
-      "default": "./dist/utils.js"
+      "default": "./dist/utils.js",
+      "require": "./dist/utils.js",
+      "import": "./dist/utils.js"
     }
   },
   "devDependencies": {
