@@ -1,7 +1,7 @@
 import { z } from 'zod';
+import { JsonSchema7Type } from 'zod-to-json-schema';
 import { ToolCallContext } from './types.js';
 import { zodToJsonSchema } from './utils.js';
-import { JsonSchema7Type } from 'zod-to-json-schema/dist/types/parseTypes.js';
 
 export class Tool<TArgs = unknown> {
   public readonly name: string;
@@ -31,6 +31,13 @@ export class Tool<TArgs = unknown> {
     return zodToJsonSchema(this.inputSchema);
   }
 
+  toCacheKey(): string {
+    return JSON.stringify({
+      name: this.name,
+      description: this.description,
+      inputSchema: this.getInputJsonSchema(),
+    });
+  }
   call(args: TArgs, context: ToolCallContext): Promise<string> | string {
     return this.fn(args, context);
   }
