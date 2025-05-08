@@ -52,6 +52,12 @@ function getCachePaths(): {
       writePath: getCachePathFromFilename('new-cache.ci.json'),
     };
   }
+  if (process.env.UPDATE_CI_CACHE === 'true') {
+    return {
+      readPath: getCachePathFromFilename('cache.ci.json'),
+      writePath: getCachePathFromFilename('cache.ci.json'),
+    };
+  }
   return {
     readPath: getCachePathFromFilename('cache.dev.json'),
     writePath: getCachePathFromFilename('cache.dev.json'),
@@ -59,5 +65,5 @@ function getCachePaths(): {
 }
 
 function getCachePathFromFilename(filename: string): string {
-  return path.resolve(import.meta.dirname, `../../cache/${filename}`);
+  return path.resolve(import.meta.dirname, `../cache/${filename}`);
 }
