@@ -1,54 +1,11 @@
-import path from 'path';
 import { describe, expect, it, vi } from 'vitest';
 import z from 'zod';
 
 import { Agent } from '../../src/Agent.js';
-import { LocalCache } from '../../src/LocalCache.js';
 import { Observation } from '../../src/Observation.js';
-import { OpenAIProvider } from '../../src/providers/OpenAIProvider.js';
 import { zodToJsonSchema } from '../../src/utils.js';
-import { mockWeatherAgent } from '../utils.js';
-
-// const DEFAULT_AWS_ANTHROPIC_MODEL =
-//   'us.anthropic.claude-3-5-haiku-20241022-v1:0';
-
-function getCachePaths(): {
-  readPath: string;
-  writePath: string;
-} {
-  if (process.env.ENV === 'ci') {
-    return {
-      readPath: getCachePathFromFilename('cache.ci.json'),
-      writePath: getCachePathFromFilename('new-cache.ci.json'),
-    };
-  }
-  return {
-    readPath: getCachePathFromFilename('cache.dev.json'),
-    writePath: getCachePathFromFilename('cache.dev.json'),
-  };
-}
-
-function getCachePathFromFilename(filename: string): string {
-  return path.resolve(import.meta.dirname, `../../cache/${filename}`);
-}
-const { readPath, writePath } = getCachePaths();
-// const provider = new AWSAnthropicProvider({
-//   awsRegion: process.env.AWS_REGION!,
-//   awsAccessKey: process.env.AWS_ACCESS_KEY!,
-//   awsSecretKey: process.env.AWS_SECRET_KEY!,
-//   cache: new LocalCache({
-//     readPath,
-//     writePath,
-//   }),
-// });
-
-const provider = new OpenAIProvider({
-  apiKey: process.env.OPENAI_API_KEY!,
-  cache: new LocalCache({
-    readPath,
-    writePath,
-  }),
-});
+import { getProvider, mockWeatherAgent } from '../utils.js';
+const provider = getProvider();
 
 const model = 'gpt-4o';
 
