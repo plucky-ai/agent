@@ -96,7 +96,7 @@ export interface FetchRawMessageOptions {
   model: string;
   messages: InputMessage[];
   tools?: Tool[];
-  observation: Observation;
+  observation?: Observation;
   name?: string;
   maxTokens: number;
 }

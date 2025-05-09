@@ -1,4 +1,5 @@
 import { LocalCache } from '../LocalCache.js';
+import { Observation } from '../Observation.js';
 import { FetchRawMessageOptions, OutputMessage } from '../types.js';
 
 export class BaseProvider {
@@ -11,6 +12,7 @@ export class BaseProvider {
   }
 
   async fetchMessage(options: FetchRawMessageOptions): Promise<OutputMessage> {
+    const observation = options.observation ?? new Observation();
     const { system, model, messages, tools, name, maxTokens } = options;
     const cacheKey = {
       version: this.version,
@@ -21,8 +23,15 @@ export class BaseProvider {
       name,
       maxTokens,
     };
-    const generation = options.observation.generation({
-      input: options.messages,
+    const tracedMessages: unknown[] = options.messages;
+    if (options.system) {
+      tracedMessages.unshift({
+        role: 'system',
+        content: options.system,
+      });
+    }
+    const generation = observation.generation({
+      input: tracedMessages,
       model: options.model,
       modelParameters: {
         maxTokens: options.maxTokens,
