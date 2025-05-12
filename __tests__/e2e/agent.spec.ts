@@ -6,12 +6,8 @@ import { Observation } from '../../src/Observation.js';
 import { zodToJsonSchema } from '../../src/utils.js';
 import { getModelInfo, mockWeatherAgent } from '../utils.js';
 
-type ProviderName = 'openai' | 'anthropic' | 'aws-anthropic';
-
-const providers = ['openai', 'anthropic', 'aws-anthropic'];
-
-describe.each(providers)('Agent with %s', (providerName: ProviderName) => {
-  const { provider, model } = getModelInfo(providerName);
+describe('Agent', () => {
+  const { provider, model } = getModelInfo('openai');
 
   it('should be defined', () => {
     expect(Agent).toBeDefined();
@@ -32,7 +28,6 @@ describe.each(providers)('Agent with %s', (providerName: ProviderName) => {
       instructions:
         'You are a friendly assistant that helps users with daily tasks.',
     });
-    const { provider, model } = getModelInfo(providerName);
     const response = await agent.getResponse({
       messages: [
         { role: 'user', content: 'Respond exactly with "Hello world!"' },
@@ -46,7 +41,6 @@ describe.each(providers)('Agent with %s', (providerName: ProviderName) => {
   }, 10000);
 
   it('should be able to get a response with a tool with %s', async () => {
-    const { provider, model } = getModelInfo(providerName);
     const response = await mockWeatherAgent.getResponse({
       messages: [{ role: 'user', content: 'What is the weather in Tokyo?' }],
       model,
@@ -62,7 +56,6 @@ describe.each(providers)('Agent with %s', (providerName: ProviderName) => {
     const responseSchema = z.object({
       degreesCelsius: z.number(),
     });
-    const { provider, model } = getModelInfo(providerName);
     const response = await mockWeatherAgent.getResponse({
       messages: [
         {

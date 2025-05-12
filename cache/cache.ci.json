@@ -269,5 +269,90 @@
       }
     ],
     "tokens_used": 62
+  },
+  "bfe8c27ff2673effed65b84947221ce96cb08b424c65b0ec237247114fa2f748": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "Hello! How can I assist you today?"
+      }
+    ],
+    "tokens_used": 20
+  },
+  "828d05cb999e7d74b00c5ef27c1555922a7db473facd783e652ad429df956f12": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "Hello world!"
+      }
+    ],
+    "tokens_used": 73
+  },
+  "ff8b7ef0b07f3b5c2db5959ae3339494e6166e6e7dece812cca38fdc8689f95d": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "tool_use",
+        "id": "call_jpt84eKe0tjUZn9n2vGUiOr5",
+        "name": "get_current_weather",
+        "input": {
+          "location": "Tokyo"
+        }
+      }
+    ],
+    "tokens_used": 117
+  },
+  "ac213f39fe4b75225c1f1f0aefb09d8bd3145cb8eb9712f06d535e44cc8a7a24": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "The current weather in Tokyo is 20 degrees Celsius. If you need more details, feel free to ask!"
+      }
+    ],
+    "tokens_used": 158
+  },
+  "2571a898c10b972660a42f02d64e549c66b508c506753ba2d386f012e4a17e61": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "tool_use",
+        "id": "call_iFVa7Tmb0nxCmWrQp8DA0S2m",
+        "name": "get_current_weather",
+        "input": {
+          "location": "Tokyo"
+        }
+      }
+    ],
+    "tokens_used": 204
+  },
+  "f35a9db387bc27f1e080b36c9096914ffcd835ad147a1219fc10ca45ebe5557f": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"degreesCelsius\": 20\n}"
+      }
+    ],
+    "tokens_used": 234
+  },
+  "69a5a3382cd75c1ee96d5f6df48c0e49de0462152532a830d9216817871417d5": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "Hello world!"
+      }
+    ],
+    "tokens_used": 72
   }
 }
