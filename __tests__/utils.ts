@@ -42,30 +42,35 @@ export function getModelInfo(name: 'openai' | 'anthropic' | 'aws-anthropic'): {
     readPath,
     writePath,
   });
-  if (name === 'openai') {
+  if (name === 'openai' && process.env.OPENAI_API_KEY) {
     return {
       provider: new OpenAIProvider({
-        apiKey: process.env.OPENAI_API_KEY!,
+        apiKey: process.env.OPENAI_API_KEY,
         cache,
       }),
       model: DEFAULT_OPENAI_MODEL,
     };
   }
-  if (name === 'anthropic') {
+  if (name === 'anthropic' && process.env.ANTHROPIC_API_KEY) {
     return {
       provider: new AnthropicProvider({
-        apiKey: process.env.ANTHROPIC_API_KEY!,
+        apiKey: process.env.ANTHROPIC_API_KEY,
         cache,
       }),
       model: DEFAULT_ANTHROPIC_MODEL,
     };
   }
-  if (name === 'aws-anthropic') {
+  if (
+    name === 'aws-anthropic' &&
+    process.env.AWS_ACCESS_KEY &&
+    process.env.AWS_SECRET_KEY &&
+    process.env.AWS_REGION
+  ) {
     return {
       provider: new AWSAnthropicProvider({
-        awsAccessKey: process.env.AWS_ACCESS_KEY!,
-        awsSecretKey: process.env.AWS_SECRET_KEY!,
-        awsRegion: process.env.AWS_REGION!,
+        awsAccessKey: process.env.AWS_ACCESS_KEY,
+        awsSecretKey: process.env.AWS_SECRET_KEY,
+        awsRegion: process.env.AWS_REGION,
         cache,
       }),
       model: DEFAULT_AWS_ANTHROPIC_MODEL,
