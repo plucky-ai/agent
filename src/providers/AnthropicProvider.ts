@@ -1,4 +1,3 @@
-import { AnthropicBedrock } from '@anthropic-ai/bedrock-sdk';
 import { Anthropic } from '@anthropic-ai/sdk';
 import type {
   MessageCreateParams,
@@ -8,21 +7,14 @@ import { LocalCache } from '../LocalCache.js';
 import { FetchRawMessageOptions, OutputMessage } from '../types.js';
 import { BaseProvider } from './BaseProvider.js';
 
-export class AWSAnthropicProvider extends BaseProvider {
-  private readonly anthropic: AnthropicBedrock;
-  constructor(options: {
-    awsAccessKey: string;
-    awsSecretKey: string;
-    awsRegion: string;
-    cache?: LocalCache;
-  }) {
+export class AnthropicProvider extends BaseProvider {
+  private readonly anthropic: Anthropic;
+  constructor(options: { apiKey: string; cache?: LocalCache }) {
     super({
       cache: options.cache,
     });
-    this.anthropic = new AnthropicBedrock({
-      awsAccessKey: options.awsAccessKey,
-      awsSecretKey: options.awsSecretKey,
-      awsRegion: options.awsRegion,
+    this.anthropic = new Anthropic({
+      apiKey: options.apiKey,
     });
   }
 

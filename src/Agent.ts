@@ -107,7 +107,7 @@ ${JSON.stringify(jsonSchema, null, 2)}
       const { output: validationOutput, output_text } =
         await validator.validate({
           instructions: this.instructions ?? '',
-          input: JSON.stringify(messages),
+          input: JSON.stringify(messages.concat(outputMessages), null, 2),
           result: selectLastText(
             outputMessages.map((m) => ({
               role: m.role,
