@@ -58,33 +58,30 @@ describe.each(providers)('Agent with %s', (providerName: ProviderName) => {
     expect(response.output_text).toContain('20');
   }, 10000);
 
-  it.each(providers)(
-    'should be able to get a response with a tool and a json schema with %s',
-    async (providerName: ProviderName) => {
-      const responseSchema = z.object({
-        degreesCelsius: z.number(),
-      });
-      const { provider, model } = getModelInfo(providerName);
-      const response = await mockWeatherAgent.getResponse({
-        messages: [
-          {
-            role: 'user',
-            content: 'What is the weather in Tokyo in Celsius?',
-          },
-        ],
-        model,
-        provider,
-        jsonSchema: zodToJsonSchema(responseSchema),
-        maxTokens: 5000,
-        maxTurns: 10,
-      });
+  it('should be able to get a response with a tool and a json schema with %s', async () => {
+    const responseSchema = z.object({
+      degreesCelsius: z.number(),
+    });
+    const { provider, model } = getModelInfo(providerName);
+    const response = await mockWeatherAgent.getResponse({
+      messages: [
+        {
+          role: 'user',
+          content: 'What is the weather in Tokyo in Celsius?',
+        },
+      ],
+      model,
+      provider,
+      jsonSchema: zodToJsonSchema(responseSchema),
+      maxTokens: 5000,
+      maxTurns: 10,
+    });
 
-      expect(response).toBeDefined();
-      const parsed = JSON.parse(response.output_text);
-      expect(parsed.degreesCelsius).toBe(20);
-      expect(() => responseSchema.parse(parsed)).not.toThrow();
-    },
-  );
+    expect(response).toBeDefined();
+    const parsed = JSON.parse(response.output_text);
+    expect(parsed.degreesCelsius).toBe(20);
+    expect(() => responseSchema.parse(parsed)).not.toThrow();
+  });
 
   it('should trace each generation', async () => {
     const observation = new Observation();

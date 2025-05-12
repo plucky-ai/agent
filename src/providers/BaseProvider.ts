@@ -22,6 +22,7 @@ export class BaseProvider {
       tools: tools?.map((tool) => tool.toCacheKey()),
       name,
       maxTokens,
+      provider: this.constructor.name,
     };
     const tracedMessages: unknown[] = options.messages.concat([]);
     if (options.system) {

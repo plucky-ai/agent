@@ -37,7 +37,6 @@ export function getModelInfo(name: 'openai' | 'anthropic' | 'aws-anthropic'): {
   model: string;
 } {
   const { readPath, writePath } = getCachePaths();
-
   const cache = new LocalCache({
     readPath,
     writePath,
