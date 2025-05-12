@@ -7,7 +7,8 @@ import { zodToJsonSchema } from '../../src/utils.js';
 import { getModelInfo, mockWeatherAgent } from '../utils.js';
 
 describe('Agent', () => {
-  const { provider, model } = getModelInfo('openai');
+  const { provider } = getModelInfo('openai');
+  const model = 'gpt-4o-mini';
 
   it('should be defined', () => {
     expect(Agent).toBeDefined();

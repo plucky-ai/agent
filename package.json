@@ -11,16 +11,16 @@
   "module": "dist/index.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js",
       "require": "./dist/index.js",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./utils": {
-      "types": "./dist/utils.d.ts",
-      "default": "./dist/utils.js",
       "require": "./dist/utils.js",
-      "import": "./dist/utils.js"
+      "import": "./dist/utils.js",
+      "types": "./dist/utils.d.ts",
+      "default": "./dist/utils.js"
     }
   },
   "devDependencies": {
