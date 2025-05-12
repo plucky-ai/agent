@@ -1,3 +1,4 @@
+import { AnthropicBedrock } from '@anthropic-ai/bedrock-sdk';
 import { Anthropic } from '@anthropic-ai/sdk';
 import type {
   MessageCreateParams,
@@ -8,7 +9,7 @@ import { FetchRawMessageOptions, OutputMessage } from '../types.js';
 import { BaseProvider } from './BaseProvider.js';
 
 export class AnthropicProvider extends BaseProvider {
-  private readonly anthropic: Anthropic;
+  private readonly anthropic: AnthropicBedrock;
   constructor(options: { apiKey: string; cache?: LocalCache }) {
     super({
       cache: options.cache,

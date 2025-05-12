@@ -4,12 +4,15 @@ import z from 'zod';
 import { Agent } from '../../src/Agent.js';
 import { Observation } from '../../src/Observation.js';
 import { zodToJsonSchema } from '../../src/utils.js';
-import { getProvider, mockWeatherAgent } from '../utils.js';
-const provider = getProvider();
+import { getModelInfo, mockWeatherAgent } from '../utils.js';
 
-const model = 'gpt-4o';
+type ProviderName = 'openai' | 'anthropic' | 'aws-anthropic';
 
-describe('Agent', () => {
+const providers = ['openai', 'anthropic', 'aws-anthropic'];
+
+describe.each(providers)('Agent with %s', (providerName: ProviderName) => {
+  const { provider, model } = getModelInfo(providerName);
+
   it('should be defined', () => {
     expect(Agent).toBeDefined();
   });
@@ -24,11 +27,12 @@ describe('Agent', () => {
     expect(response).toBeDefined();
   });
 
-  it('should be able to get a response', async () => {
+  it('should be able to get a response with %s', async () => {
     const agent = new Agent({
       instructions:
         'You are a friendly assistant that helps users with daily tasks.',
     });
+    const { provider, model } = getModelInfo(providerName);
     const response = await agent.getResponse({
       messages: [
         { role: 'user', content: 'Respond exactly with "Hello world!"' },
@@ -41,7 +45,8 @@ describe('Agent', () => {
     expect(response.output_text).toEqual('Hello world!');
   }, 10000);
 
-  it('should be able to get a response with a tool', async () => {
+  it('should be able to get a response with a tool with %s', async () => {
+    const { provider, model } = getModelInfo(providerName);
     const response = await mockWeatherAgent.getResponse({
       messages: [{ role: 'user', content: 'What is the weather in Tokyo?' }],
       model,
@@ -53,26 +58,33 @@ describe('Agent', () => {
     expect(response.output_text).toContain('20');
   }, 10000);
 
-  it('should be able to get a response with a tool and a json schema', async () => {
-    const responseSchema = z.object({
-      degreesCelsius: z.number(),
-    });
-    const response = await mockWeatherAgent.getResponse({
-      messages: [
-        { role: 'user', content: 'What is the weathder in Tokyo in Celsius?' },
-      ],
-      model,
-      provider,
-      jsonSchema: zodToJsonSchema(responseSchema),
-      maxTokens: 10000,
-      maxTurns: 10,
-    });
+  it.each(providers)(
+    'should be able to get a response with a tool and a json schema with %s',
+    async (providerName: ProviderName) => {
+      const responseSchema = z.object({
+        degreesCelsius: z.number(),
+      });
+      const { provider, model } = getModelInfo(providerName);
+      const response = await mockWeatherAgent.getResponse({
+        messages: [
+          {
+            role: 'user',
+            content: 'What is the weather in Tokyo in Celsius?',
+          },
+        ],
+        model,
+        provider,
+        jsonSchema: zodToJsonSchema(responseSchema),
+        maxTokens: 5000,
+        maxTurns: 10,
+      });
 
-    expect(response).toBeDefined();
-    const parsed = JSON.parse(response.output_text);
-    expect(parsed.degreesCelsius).toBe(20);
-    expect(() => responseSchema.parse(parsed)).not.toThrow();
-  });
+      expect(response).toBeDefined();
+      const parsed = JSON.parse(response.output_text);
+      expect(parsed.degreesCelsius).toBe(20);
+      expect(() => responseSchema.parse(parsed)).not.toThrow();
+    },
+  );
 
   it('should trace each generation', async () => {
     const observation = new Observation();

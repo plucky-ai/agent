@@ -2,9 +2,17 @@ import path from 'path';
 import { z } from 'zod';
 import { Agent } from '../src/Agent.js';
 import { LocalCache } from '../src/LocalCache.js';
+import { AnthropicProvider } from '../src/providers/AnthropicProvider.js';
+import { AWSAnthropicProvider } from '../src/providers/AWSAnthropicProvider.js';
 import { BaseProvider } from '../src/providers/BaseProvider.js';
 import { OpenAIProvider } from '../src/providers/OpenAIProvider.js';
 import { Tool } from '../src/Tool.js';
+
+export const DEFAULT_OPENAI_MODEL = 'gpt-4o-mini';
+export const DEFAULT_ANTHROPIC_MODEL = 'claude-3-5-haiku-20241022';
+export const DEFAULT_AWS_ANTHROPIC_MODEL =
+  'us.anthropic.claude-3-5-haiku-20241022-v1:0';
+
 export const mockWeatherTool = new Tool(
   {
     name: 'get_current_weather',
@@ -24,22 +32,51 @@ export const mockWeatherAgent = new Agent({
   tools: [mockWeatherTool],
 });
 
-export function getProvider(): BaseProvider {
+export function getModelInfo(name: 'openai' | 'anthropic' | 'aws-anthropic'): {
+  provider: BaseProvider;
+  model: string;
+} {
   const { readPath, writePath } = getCachePaths();
 
   const cache = new LocalCache({
     readPath,
     writePath,
   });
-  if (process.env.OPENAI_API_KEY) {
-    return new OpenAIProvider({
-      apiKey: process.env.OPENAI_API_KEY,
-      cache,
-    });
+  if (name === 'openai') {
+    return {
+      provider: new OpenAIProvider({
+        apiKey: process.env.OPENAI_API_KEY!,
+        cache,
+      }),
+      model: DEFAULT_OPENAI_MODEL,
+    };
   }
-  return new BaseProvider({
-    cache,
-  });
+  if (name === 'anthropic') {
+    return {
+      provider: new AnthropicProvider({
+        apiKey: process.env.ANTHROPIC_API_KEY!,
+        cache,
+      }),
+      model: DEFAULT_ANTHROPIC_MODEL,
+    };
+  }
+  if (name === 'aws-anthropic') {
+    return {
+      provider: new AWSAnthropicProvider({
+        awsAccessKey: process.env.AWS_ACCESS_KEY!,
+        awsSecretKey: process.env.AWS_SECRET_KEY!,
+        awsRegion: process.env.AWS_REGION!,
+        cache,
+      }),
+      model: DEFAULT_AWS_ANTHROPIC_MODEL,
+    };
+  }
+  return {
+    provider: new BaseProvider({
+      cache,
+    }),
+    model: '',
+  };
 }
 
 function getCachePaths(): {

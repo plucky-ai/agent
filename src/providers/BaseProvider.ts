@@ -23,7 +23,7 @@ export class BaseProvider {
       name,
       maxTokens,
     };
-    const tracedMessages: unknown[] = options.messages;
+    const tracedMessages: unknown[] = options.messages.concat([]);
     if (options.system) {
       tracedMessages.unshift({
         role: 'system',

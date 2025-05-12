@@ -33,7 +33,7 @@ export class AWSAnthropicProvider extends BaseProvider {
       system: options.system,
       model: options.model,
       messages: options.messages as MessageCreateParams['messages'],
-      max_tokens: options.maxTokens,
+      max_tokens: Math.min(options.maxTokens, 8000),
       tools: options.tools?.map((tool) => ({
         name: tool.name,
         description: tool.description,
