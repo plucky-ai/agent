@@ -1,275 +1,4 @@
 {
-  "5f31119b4b541292a886a4b2893f0632535e25be31e304c11984dcb37c731a9e": {
-    "type": "message",
-    "role": "assistant",
-    "content": [
-      {
-        "type": "text",
-        "text": "Hi there! How are you doing today? Is there anything I can help you with?"
-      }
-    ],
-    "tokens_used": 31
-  },
-  "a79dca40ac8d1eb2aef635774ca32c68b07bee81c849157b1eae60835277fac1": {
-    "type": "message",
-    "role": "assistant",
-    "content": [
-      {
-        "type": "text",
-        "text": "Hello world!"
-      }
-    ],
-    "tokens_used": 64
-  },
-  "c31721d1cd8e67a04587f0e2f64cf44240a3df027fedd2b2bbddf227b2663b3d": {
-    "type": "message",
-    "role": "assistant",
-    "content": [
-      {
-        "type": "text",
-        "text": "I'll help you check the current weather in Tokyo right away."
-      },
-      {
-        "type": "tool_use",
-        "id": "toolu_01Ggty6RhRyYESx4oKm6dRZT",
-        "name": "get_current_weather",
-        "input": {
-          "location": "Tokyo"
-        }
-      }
-    ],
-    "tokens_used": 465
-  },
-  "b02220d8a68ce0677826367b7c26a6366d243248c724c8138e1df21308119390": {
-    "type": "message",
-    "role": "assistant",
-    "content": [
-      {
-        "type": "text",
-        "text": "The current temperature in Tokyo is 20 degrees Celsius (68 degrees Fahrenheit). It seems like a mild and pleasant day in the city. Would you like to know anything else about the weather in Tokyo?"
-      }
-    ],
-    "tokens_used": 536
-  },
-  "8998d2767db12e2ddeb2b917ac2afffdf02c9481563e3994ca6f793266cb5178": {
-    "type": "message",
-    "role": "assistant",
-    "content": [
-      {
-        "type": "text",
-        "text": "I'll help you get the current weather in Tokyo using the get_current_weather function."
-      },
-      {
-        "type": "tool_use",
-        "id": "toolu_0186DLurK4cTnm9BX6CqLArL",
-        "name": "get_current_weather",
-        "input": {
-          "location": "Tokyo"
-        }
-      }
-    ],
-    "tokens_used": 582
-  },
-  "a7af57d7511e30beb30bb5e6d07e482783abe6d41f28b589d1661917c07c3414": {
-    "type": "message",
-    "role": "assistant",
-    "content": [
-      {
-        "type": "text",
-        "text": "{\"degreesCelsius\": 20}"
-      }
-    ],
-    "tokens_used": 618
-  },
-  "9ad16f05fd4c7b220320b09863b705f36f97f55c54709d17bbdff0fb24dff62f": {
-    "type": "message",
-    "role": "assistant",
-    "content": [
-      {
-        "type": "text",
-        "text": "Hello world!"
-      }
-    ],
-    "tokens_used": 62
-  },
-  "90c7a78eca203fa71111ddabb8b6a0daa4bd3297694fcefb6e644e9bd2b8c438": {
-    "role": "assistant",
-    "type": "message",
-    "content": [
-      {
-        "type": "text",
-        "text": "Hello! How can I assist you today?"
-      }
-    ],
-    "tokens_used": 20
-  },
-  "88615320d3737801726f2cde0b9b53797d8264c9a487fe311f9aa456fa7c50e5": {
-    "role": "assistant",
-    "type": "message",
-    "content": [
-      {
-        "type": "text",
-        "text": "Hello world!"
-      }
-    ],
-    "tokens_used": 73
-  },
-  "b734b8ebba8bdd0c3535819b5153fa6953a026d712a4219f96098b789f9aef01": {
-    "role": "assistant",
-    "type": "message",
-    "content": [
-      {
-        "type": "tool_use",
-        "id": "call_PGQlSX59xhv2pNbjjObyBFoo",
-        "name": "get_current_weather",
-        "input": {
-          "location": "Tokyo"
-        }
-      }
-    ],
-    "tokens_used": 117
-  },
-  "e71db9261e46954cf76ad742f793595b5e7e00778c58a707312e62312a503404": {
-    "role": "assistant",
-    "type": "message",
-    "content": [
-      {
-        "type": "text",
-        "text": "The current weather in Tokyo is 20 degrees Celsius."
-      }
-    ],
-    "tokens_used": 147
-  },
-  "0e6de0278fded4e8d7fea3949eddb10e2bb467515dd0f352827345a0e2815cf2": {
-    "role": "assistant",
-    "type": "message",
-    "content": [
-      {
-        "type": "tool_use",
-        "id": "call_fKHRhqZZlCVdVfiIdWwKF4RY",
-        "name": "get_current_weather",
-        "input": {
-          "location": "Tokyo"
-        }
-      }
-    ],
-    "tokens_used": 204
-  },
-  "522b819f0d0c6649fb69afbce1d4742c62237f0acc6a2ea742f9e2bd567ac1c3": {
-    "role": "assistant",
-    "type": "message",
-    "content": [
-      {
-        "type": "text",
-        "text": "{\n  \"degreesCelsius\": 20\n}"
-      }
-    ],
-    "tokens_used": 234
-  },
-  "cd34c11a0c6bdcdb8bbbcb257e1d184b811c9272671acbe815108f905e777d23": {
-    "role": "assistant",
-    "type": "message",
-    "content": [
-      {
-        "type": "text",
-        "text": "Hello world!"
-      }
-    ],
-    "tokens_used": 72
-  },
-  "6af05d308d9a300e86b9c9b0cd8def5394d2fd7b959d098d11218a59477293db": {
-    "type": "message",
-    "role": "assistant",
-    "content": [
-      {
-        "type": "text",
-        "text": "Hi there! It's nice to meet you. How are you doing today? Is there anything I can help you with?"
-      }
-    ],
-    "tokens_used": 38
-  },
-  "f156f9b369d481738e99fc39a598241f729f301afd6e96041f3eb7ea84f4928c": {
-    "type": "message",
-    "role": "assistant",
-    "content": [
-      {
-        "type": "text",
-        "text": "Hello world!"
-      }
-    ],
-    "tokens_used": 64
-  },
-  "b5d63f139bb0bd7986301b45ac204cf03b318c67bbb5f1a1badba73737614e71": {
-    "type": "message",
-    "role": "assistant",
-    "content": [
-      {
-        "type": "text",
-        "text": "I'll check the current weather in Tokyo for you right away."
-      },
-      {
-        "type": "tool_use",
-        "id": "toolu_bdrk_01HSJoCKnmipK9wdFZFKEUmG",
-        "name": "get_current_weather",
-        "input": {
-          "location": "Tokyo"
-        }
-      }
-    ],
-    "tokens_used": 465
-  },
-  "e39be5132132fb5ba4d03cf26d96d0feebef51fd5e904a77d3641d4788555932": {
-    "type": "message",
-    "role": "assistant",
-    "content": [
-      {
-        "type": "text",
-        "text": "The current temperature in Tokyo is 20 degrees Celsius (68 degrees Fahrenheit). It sounds like a mild and comfortable day in the city. Would you like to know anything else about the weather?"
-      }
-    ],
-    "tokens_used": 534
-  },
-  "a2f26b36fa709c906a93c868dcc5dc1dd7915e53b356a7ca44934239b0e7b763": {
-    "type": "message",
-    "role": "assistant",
-    "content": [
-      {
-        "type": "text",
-        "text": "I'll help you get the current weather in Tokyo by using the get_current_weather function."
-      },
-      {
-        "type": "tool_use",
-        "id": "toolu_bdrk_01FasDS7JL9LeC3dzRcYw49y",
-        "name": "get_current_weather",
-        "input": {
-          "location": "Tokyo"
-        }
-      }
-    ],
-    "tokens_used": 583
-  },
-  "32d2b9908b15bf029b292f18b827fc74c5f272450216ff7ee8f43f449313604e": {
-    "type": "message",
-    "role": "assistant",
-    "content": [
-      {
-        "type": "text",
-        "text": "{\"degreesCelsius\": 20}"
-      }
-    ],
-    "tokens_used": 619
-  },
-  "4deddef504cb8bbc42e984d756b6cc6bce422f483b862c814cbd81263a4d1181": {
-    "type": "message",
-    "role": "assistant",
-    "content": [
-      {
-        "type": "text",
-        "text": "Hello world!"
-      }
-    ],
-    "tokens_used": 62
-  },
   "bfe8c27ff2673effed65b84947221ce96cb08b424c65b0ec237247114fa2f748": {
     "role": "assistant",
     "type": "message",
@@ -298,7 +27,7 @@
     "content": [
       {
         "type": "tool_use",
-        "id": "call_jpt84eKe0tjUZn9n2vGUiOr5",
+        "id": "call_jlMTg7Lb03XsDbCLAC0bTp9Q",
         "name": "get_current_weather",
         "input": {
           "location": "Tokyo"
@@ -307,92 +36,7 @@
     ],
     "tokens_used": 117
   },
-  "ac213f39fe4b75225c1f1f0aefb09d8bd3145cb8eb9712f06d535e44cc8a7a24": {
-    "role": "assistant",
-    "type": "message",
-    "content": [
-      {
-        "type": "text",
-        "text": "The current weather in Tokyo is 20 degrees Celsius. If you need more details, feel free to ask!"
-      }
-    ],
-    "tokens_used": 158
-  },
-  "2571a898c10b972660a42f02d64e549c66b508c506753ba2d386f012e4a17e61": {
-    "role": "assistant",
-    "type": "message",
-    "content": [
-      {
-        "type": "tool_use",
-        "id": "call_iFVa7Tmb0nxCmWrQp8DA0S2m",
-        "name": "get_current_weather",
-        "input": {
-          "location": "Tokyo"
-        }
-      }
-    ],
-    "tokens_used": 204
-  },
-  "f35a9db387bc27f1e080b36c9096914ffcd835ad147a1219fc10ca45ebe5557f": {
-    "role": "assistant",
-    "type": "message",
-    "content": [
-      {
-        "type": "text",
-        "text": "{\n  \"degreesCelsius\": 20\n}"
-      }
-    ],
-    "tokens_used": 234
-  },
-  "69a5a3382cd75c1ee96d5f6df48c0e49de0462152532a830d9216817871417d5": {
-    "role": "assistant",
-    "type": "message",
-    "content": [
-      {
-        "type": "text",
-        "text": "Hello world!"
-      }
-    ],
-    "tokens_used": 72
-  },
-  "920a7bab64961cc507a54298f1e003f31201bb9d5b4cc696e15ef0e68531c201": {
-    "role": "assistant",
-    "type": "message",
-    "content": [
-      {
-        "type": "text",
-        "text": "Hello, world! 🌍 How can I assist you today? 😊"
-      }
-    ],
-    "tokens_used": 25
-  },
-  "14ebba69ebf191a9f9c27458863dabf73421bbdf125ae950d0b0b166532e3de2": {
-    "role": "assistant",
-    "type": "message",
-    "content": [
-      {
-        "type": "text",
-        "text": "Hello world!"
-      }
-    ],
-    "tokens_used": 73
-  },
-  "a4d6d52658b87774a349a433d3909f4bfb27e0e274137a49b7a755352bdd3f6a": {
-    "role": "assistant",
-    "type": "message",
-    "content": [
-      {
-        "type": "tool_use",
-        "id": "call_mowZRT0XCV3b8JjXKwPrvIXg",
-        "name": "get_current_weather",
-        "input": {
-          "location": "Tokyo"
-        }
-      }
-    ],
-    "tokens_used": 117
-  },
-  "945ed1fdf6e557f9a30407ba5f8446ad337a8f568217ebc39d29184121d44508": {
+  "c10b0d8dcb2bf898c241b3f3dc8fc2d78d93ae31030b3ae767b94b14b314c2f1": {
     "role": "assistant",
     "type": "message",
     "content": [
@@ -403,13 +47,13 @@
     ],
     "tokens_used": 147
   },
-  "5bc7b99b6eaabd34da33188b987768b90a7c170308ca9503deacd4491ef2472b": {
+  "2571a898c10b972660a42f02d64e549c66b508c506753ba2d386f012e4a17e61": {
     "role": "assistant",
     "type": "message",
     "content": [
       {
         "type": "tool_use",
-        "id": "call_PH3WEh3xZkzHRZ03T8SPSgYs",
+        "id": "call_IPTrrxmDvKik0HsmxEeEf5KD",
         "name": "get_current_weather",
         "input": {
           "location": "Tokyo"
@@ -418,18 +62,7 @@
     ],
     "tokens_used": 204
   },
-  "c7c53c45165dcee6c40c1ae636d4747734bbc39edaa91f792f36d63020903fb2": {
-    "role": "assistant",
-    "type": "message",
-    "content": [
-      {
-        "type": "text",
-        "text": "Hello world!"
-      }
-    ],
-    "tokens_used": 67
-  },
-  "339591d1723e5a5f4244858633d06aa3b85f46e7d6ccb0ba38f72f907580d961": {
+  "e052a787598c7f1c67b29a4e09c7d20812c85e7da10741c322c82154ffb35f2f": {
     "role": "assistant",
     "type": "message",
     "content": [
@@ -439,5 +72,16 @@
       }
     ],
     "tokens_used": 234
+  },
+  "27618930b6562b2e9e2c4cbaac3bf7feae027c3c3460ffa10ce8044fe2a77e4c": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "Hello world!"
+      }
+    ],
+    "tokens_used": 67
   }
 }
