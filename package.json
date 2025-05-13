@@ -1,6 +1,6 @@
 {
   "name": "@plucky-ai/agent",
-  "version": "0.0.1-alpha.39",
+  "version": "0.0.1-alpha.40",
   "description": "Plucky's AI agentic framework.",
   "type": "module",
   "engines": {
@@ -60,6 +60,7 @@
   "license": "MIT",
   "dependencies": {
     "@anthropic-ai/bedrock-sdk": "^0.12.6",
+    "@azure/openai": "^2.0.0",
     "ajv": "^8.17.1",
     "dotenv": "^16.5.0",
     "langfuse": "^3.37.2",

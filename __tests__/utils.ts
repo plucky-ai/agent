@@ -4,6 +4,7 @@ import { Agent } from '../src/Agent.js';
 import { LocalCache } from '../src/LocalCache.js';
 import { AnthropicProvider } from '../src/providers/AnthropicProvider.js';
 import { AWSAnthropicProvider } from '../src/providers/AWSAnthropicProvider.js';
+import { AzureOpenAIProvider } from '../src/providers/AzureOpenAIProvider.js';
 import { BaseProvider } from '../src/providers/BaseProvider.js';
 import { OpenAIProvider } from '../src/providers/OpenAIProvider.js';
 import { Tool } from '../src/Tool.js';
@@ -32,7 +33,9 @@ export const mockWeatherAgent = new Agent({
   tools: [mockWeatherTool],
 });
 
-export function getModelInfo(name: 'openai' | 'anthropic' | 'aws-anthropic'): {
+export function getModelInfo(
+  name: 'openai' | 'anthropic' | 'aws-anthropic' | 'azure-openai',
+): {
   provider: BaseProvider;
   model: string;
 } {
@@ -73,6 +76,18 @@ export function getModelInfo(name: 'openai' | 'anthropic' | 'aws-anthropic'): {
         cache,
       }),
       model: DEFAULT_AWS_ANTHROPIC_MODEL,
+    };
+  }
+  if (name === 'azure-openai' && process.env.AZURE_OPENAI_API_KEY) {
+    return {
+      provider: new AzureOpenAIProvider({
+        apiKey: process.env.AZURE_OPENAI_API_KEY,
+        endpoint: process.env.AZURE_OPENAI_ENDPOINT!,
+        apiVersion: process.env.AZURE_OPENAI_API_VERSION!,
+        deployment: process.env.AZURE_OPENAI_DEPLOYMENT!,
+        cache,
+      }),
+      model: '',
     };
   }
   return {

@@ -87,7 +87,7 @@ describe('Agent', () => {
       messages: [
         {
           role: 'user',
-          content: 'Say "Hello world!" exactly, with no other commentary.',
+          content: 'Say "Hello world!" exactly.',
         },
       ],
       model,

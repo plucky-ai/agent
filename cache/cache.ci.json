@@ -354,5 +354,90 @@
       }
     ],
     "tokens_used": 72
+  },
+  "920a7bab64961cc507a54298f1e003f31201bb9d5b4cc696e15ef0e68531c201": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "Hello, world! 🌍 How can I assist you today? 😊"
+      }
+    ],
+    "tokens_used": 25
+  },
+  "14ebba69ebf191a9f9c27458863dabf73421bbdf125ae950d0b0b166532e3de2": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "Hello world!"
+      }
+    ],
+    "tokens_used": 73
+  },
+  "a4d6d52658b87774a349a433d3909f4bfb27e0e274137a49b7a755352bdd3f6a": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "tool_use",
+        "id": "call_mowZRT0XCV3b8JjXKwPrvIXg",
+        "name": "get_current_weather",
+        "input": {
+          "location": "Tokyo"
+        }
+      }
+    ],
+    "tokens_used": 117
+  },
+  "945ed1fdf6e557f9a30407ba5f8446ad337a8f568217ebc39d29184121d44508": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "The current weather in Tokyo is 20 degrees Celsius."
+      }
+    ],
+    "tokens_used": 147
+  },
+  "5bc7b99b6eaabd34da33188b987768b90a7c170308ca9503deacd4491ef2472b": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "tool_use",
+        "id": "call_PH3WEh3xZkzHRZ03T8SPSgYs",
+        "name": "get_current_weather",
+        "input": {
+          "location": "Tokyo"
+        }
+      }
+    ],
+    "tokens_used": 204
+  },
+  "c7c53c45165dcee6c40c1ae636d4747734bbc39edaa91f792f36d63020903fb2": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "Hello world!"
+      }
+    ],
+    "tokens_used": 67
+  },
+  "339591d1723e5a5f4244858633d06aa3b85f46e7d6ccb0ba38f72f907580d961": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"degreesCelsius\": 20\n}"
+      }
+    ],
+    "tokens_used": 234
   }
 }
