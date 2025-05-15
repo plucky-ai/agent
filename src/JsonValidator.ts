@@ -61,7 +61,6 @@ export class JsonValidator {
     output_text: string;
   }> {
     this.attempts++;
-
     const allJson = selectJsonInText(input);
     if (allJson.length > 0) {
       const target = allJson[allJson.length - 1] ?? '';

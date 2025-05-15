@@ -47,7 +47,9 @@ export function getModelInfo(
   if (name === 'openai' && process.env.OPENAI_API_KEY) {
     return {
       provider: new OpenAIProvider({
-        apiKey: process.env.OPENAI_API_KEY,
+        clientOptions: {
+          apiKey: process.env.OPENAI_API_KEY,
+        },
         cache,
       }),
       model: DEFAULT_OPENAI_MODEL,
@@ -56,7 +58,9 @@ export function getModelInfo(
   if (name === 'anthropic' && process.env.ANTHROPIC_API_KEY) {
     return {
       provider: new AnthropicProvider({
-        apiKey: process.env.ANTHROPIC_API_KEY,
+        clientOptions: {
+          apiKey: process.env.ANTHROPIC_API_KEY,
+        },
         cache,
       }),
       model: DEFAULT_ANTHROPIC_MODEL,
@@ -70,9 +74,11 @@ export function getModelInfo(
   ) {
     return {
       provider: new AWSAnthropicProvider({
-        awsAccessKey: process.env.AWS_ACCESS_KEY,
-        awsSecretKey: process.env.AWS_SECRET_KEY,
-        awsRegion: process.env.AWS_REGION,
+        clientOptions: {
+          awsAccessKey: process.env.AWS_ACCESS_KEY,
+          awsSecretKey: process.env.AWS_SECRET_KEY,
+          awsRegion: process.env.AWS_REGION,
+        },
         cache,
       }),
       model: DEFAULT_AWS_ANTHROPIC_MODEL,
@@ -81,10 +87,12 @@ export function getModelInfo(
   if (name === 'azure-openai' && process.env.AZURE_OPENAI_API_KEY) {
     return {
       provider: new AzureOpenAIProvider({
-        apiKey: process.env.AZURE_OPENAI_API_KEY,
-        endpoint: process.env.AZURE_OPENAI_ENDPOINT!,
-        apiVersion: process.env.AZURE_OPENAI_API_VERSION!,
-        deployment: process.env.AZURE_OPENAI_DEPLOYMENT!,
+        clientOptions: {
+          apiKey: process.env.AZURE_OPENAI_API_KEY,
+          endpoint: process.env.AZURE_OPENAI_ENDPOINT!,
+          apiVersion: process.env.AZURE_OPENAI_API_VERSION!,
+          deployment: process.env.AZURE_OPENAI_DEPLOYMENT!,
+        },
         cache,
       }),
       model: '',

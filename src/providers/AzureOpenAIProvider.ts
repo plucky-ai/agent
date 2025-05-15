@@ -1,4 +1,4 @@
-import { AzureOpenAI } from 'openai';
+import { AzureClientOptions, AzureOpenAI } from 'openai';
 import { ChatCompletionMessageParam } from 'openai/resources.js';
 import { LocalCache } from '../LocalCache.js';
 import {
@@ -12,21 +12,13 @@ import { BaseProvider } from './BaseProvider.js';
 export class AzureOpenAIProvider extends BaseProvider {
   private readonly azureOpenAI: AzureOpenAI;
   constructor(options: {
-    apiKey: string;
-    endpoint: string;
-    apiVersion: string;
-    deployment: string;
     cache?: LocalCache;
+    clientOptions: AzureClientOptions;
   }) {
     super({
       cache: options.cache,
     });
-    this.azureOpenAI = new AzureOpenAI({
-      apiKey: options.apiKey,
-      endpoint: options.endpoint,
-      apiVersion: options.apiVersion,
-      deployment: options.deployment,
-    });
+    this.azureOpenAI = new AzureOpenAI(options.clientOptions);
   }
   async fetchRawMessage(options: FetchMessageOptions): Promise<OutputMessage> {
     function constructMessage(
@@ -86,12 +78,6 @@ export class AzureOpenAIProvider extends BaseProvider {
       };
     }
     const messages = options.messages.map(constructMessage);
-    if (options.system) {
-      messages.unshift({
-        role: 'system',
-        content: options.system,
-      });
-    }
     const response = await this.azureOpenAI.chat.completions.create({
       model: options.model,
       messages,

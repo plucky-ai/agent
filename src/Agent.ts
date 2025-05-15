@@ -42,7 +42,7 @@ export class Agent {
     const maxTurns = options.maxTurns ?? 5;
     let turns = 0;
     let tokens = 0;
-    let systemMessage = this.instructions;
+    let systemMessage = this.instructions || '';
     if (jsonSchema) {
       systemMessage += `
 In your final message, you must return only a JSON object that matches the below schema with no other commentary.
@@ -116,7 +116,7 @@ ${JSON.stringify(jsonSchema, null, 2)}
       });
       const { output: validationOutput, output_text } =
         await validator.validate({
-          instructions: this.instructions ?? '',
+          instructions: systemMessage,
           input: JSON.stringify(messages.concat(outputMessages), null, 2),
           result: selectLastText(
             outputMessages.map((m) => ({

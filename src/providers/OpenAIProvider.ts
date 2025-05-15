@@ -1,4 +1,4 @@
-import { OpenAI } from 'openai';
+import { ClientOptions, OpenAI } from 'openai';
 import { ChatCompletionMessageParam } from 'openai/resources.js';
 import { LocalCache } from '../LocalCache.js';
 import {
@@ -11,18 +11,11 @@ import { BaseProvider } from './BaseProvider.js';
 
 export class OpenAIProvider extends BaseProvider {
   private readonly openai: OpenAI | null;
-  constructor(options: { apiKey: string; cache?: LocalCache }) {
+  constructor(options: { cache?: LocalCache; clientOptions: ClientOptions }) {
     super({
       cache: options.cache,
     });
-    if (!options.apiKey && !this.cache) {
-      throw new Error('No API key or cache provided');
-    }
-    this.openai = options.apiKey
-      ? new OpenAI({
-          apiKey: options.apiKey,
-        })
-      : null;
+    this.openai = new OpenAI(options.clientOptions);
   }
   async fetchRawMessage(options: FetchMessageOptions): Promise<OutputMessage> {
     function constructMessage(
@@ -82,12 +75,6 @@ export class OpenAIProvider extends BaseProvider {
       };
     }
     const messages = options.messages.map(constructMessage);
-    if (options.system) {
-      messages.unshift({
-        role: 'system',
-        content: options.system,
-      });
-    }
     if (!this.openai) {
       throw new Error('No OpenAI client');
     }
