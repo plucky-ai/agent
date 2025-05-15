@@ -13,15 +13,7 @@ export class BaseProvider {
 
   async fetchMessage(options: FetchMessageOptions): Promise<OutputMessage> {
     const observation = options.observation ?? new Observation();
-    const {
-      system,
-      model,
-      messages,
-      tools,
-      name,
-      maxTokens,
-      maxTokensPerTurn,
-    } = options;
+    const { system, model, messages, tools, name, maxTokens } = options;
     const cacheKey = {
       version: this.version,
       system,
@@ -30,7 +22,6 @@ export class BaseProvider {
       tools: tools?.map((tool) => tool.toCacheKey()),
       name,
       maxTokens,
-      maxTokensPerTurn,
     };
     const tracedMessages: unknown[] = options.messages.concat([]);
     if (options.system) {

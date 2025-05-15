@@ -99,5 +99,4 @@ export interface FetchMessageOptions {
   observation?: Observation;
   name?: string;
   maxTokens: number;
-  maxTokensPerTurn?: number;
 }
