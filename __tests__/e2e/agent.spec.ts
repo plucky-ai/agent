@@ -35,7 +35,7 @@ describe('Agent', () => {
       ],
       model,
       provider,
-      maxTokens: 5000,
+      maxTokensPerTurn: 5000,
     });
     expect(response).toBeDefined();
     expect(response.output_text).toEqual('Hello world!');
@@ -46,7 +46,7 @@ describe('Agent', () => {
       messages: [{ role: 'user', content: 'What is the weather in Tokyo?' }],
       model,
       provider,
-      maxTokens: 5000,
+      maxTokensPerTurn: 5000,
     });
     expect(response).toBeDefined();
     expect(response.output_text).toContain('Tokyo');
@@ -67,7 +67,7 @@ describe('Agent', () => {
       model,
       provider,
       jsonSchema: zodToJsonSchema(responseSchema),
-      maxTokens: 5000,
+      maxTokensPerTurn: 5000,
       maxTurns: 10,
     });
 

@@ -34,7 +34,7 @@ export class BaseProvider {
       input: tracedMessages,
       model: options.model,
       modelParameters: {
-        maxTokens: options.maxTokensPerTurn,
+        maxTokens: options.maxTokens,
       },
       name: options.name,
     });
