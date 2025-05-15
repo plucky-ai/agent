@@ -30,9 +30,11 @@ function getCachePathFromFilename(filename: string): string {
 }
 const { readPath, writePath } = getCachePaths();
 const provider = new AWSAnthropicProvider({
-  awsRegion: process.env.AWS_REGION!,
-  awsAccessKey: process.env.AWS_ACCESS_KEY!,
-  awsSecretKey: process.env.AWS_SECRET_KEY!,
+  clientOptions: {
+    awsAccessKey: process.env.AWS_ACCESS_KEY!,
+    awsSecretKey: process.env.AWS_SECRET_KEY!,
+    awsRegion: process.env.AWS_REGION!,
+  },
   cache: new LocalCache({
     readPath,
     writePath,

@@ -2,9 +2,18 @@ import path from 'path';
 import { z } from 'zod';
 import { Agent } from '../src/Agent.js';
 import { LocalCache } from '../src/LocalCache.js';
+import { AnthropicProvider } from '../src/providers/AnthropicProvider.js';
+import { AWSAnthropicProvider } from '../src/providers/AWSAnthropicProvider.js';
+import { AzureOpenAIProvider } from '../src/providers/AzureOpenAIProvider.js';
 import { BaseProvider } from '../src/providers/BaseProvider.js';
 import { OpenAIProvider } from '../src/providers/OpenAIProvider.js';
 import { Tool } from '../src/Tool.js';
+
+export const DEFAULT_OPENAI_MODEL = 'gpt-4o-mini';
+export const DEFAULT_ANTHROPIC_MODEL = 'claude-3-5-haiku-20241022';
+export const DEFAULT_AWS_ANTHROPIC_MODEL =
+  'us.anthropic.claude-3-5-haiku-20241022-v1:0';
+
 export const mockWeatherTool = new Tool(
   {
     name: 'get_current_weather',
@@ -24,22 +33,77 @@ export const mockWeatherAgent = new Agent({
   tools: [mockWeatherTool],
 });
 
-export function getProvider(): BaseProvider {
+export function getModelInfo(
+  name: 'openai' | 'anthropic' | 'aws-anthropic' | 'azure-openai',
+): {
+  provider: BaseProvider;
+  model: string;
+} {
   const { readPath, writePath } = getCachePaths();
-
   const cache = new LocalCache({
     readPath,
     writePath,
   });
-  if (process.env.OPENAI_API_KEY) {
-    return new OpenAIProvider({
-      apiKey: process.env.OPENAI_API_KEY,
-      cache,
-    });
+  if (name === 'openai' && process.env.OPENAI_API_KEY) {
+    return {
+      provider: new OpenAIProvider({
+        clientOptions: {
+          apiKey: process.env.OPENAI_API_KEY,
+        },
+        cache,
+      }),
+      model: DEFAULT_OPENAI_MODEL,
+    };
   }
-  return new BaseProvider({
-    cache,
-  });
+  if (name === 'anthropic' && process.env.ANTHROPIC_API_KEY) {
+    return {
+      provider: new AnthropicProvider({
+        clientOptions: {
+          apiKey: process.env.ANTHROPIC_API_KEY,
+        },
+        cache,
+      }),
+      model: DEFAULT_ANTHROPIC_MODEL,
+    };
+  }
+  if (
+    name === 'aws-anthropic' &&
+    process.env.AWS_ACCESS_KEY &&
+    process.env.AWS_SECRET_KEY &&
+    process.env.AWS_REGION
+  ) {
+    return {
+      provider: new AWSAnthropicProvider({
+        clientOptions: {
+          awsAccessKey: process.env.AWS_ACCESS_KEY,
+          awsSecretKey: process.env.AWS_SECRET_KEY,
+          awsRegion: process.env.AWS_REGION,
+        },
+        cache,
+      }),
+      model: DEFAULT_AWS_ANTHROPIC_MODEL,
+    };
+  }
+  if (name === 'azure-openai' && process.env.AZURE_OPENAI_API_KEY) {
+    return {
+      provider: new AzureOpenAIProvider({
+        clientOptions: {
+          apiKey: process.env.AZURE_OPENAI_API_KEY,
+          endpoint: process.env.AZURE_OPENAI_ENDPOINT!,
+          apiVersion: process.env.AZURE_OPENAI_API_VERSION!,
+          deployment: process.env.AZURE_OPENAI_DEPLOYMENT!,
+        },
+        cache,
+      }),
+      model: '',
+    };
+  }
+  return {
+    provider: new BaseProvider({
+      cache,
+    }),
+    model: '',
+  };
 }
 
 function getCachePaths(): {

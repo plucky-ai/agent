@@ -91,12 +91,12 @@ export type ToolCallContext = {
   observation: Observation;
 };
 
-export interface FetchRawMessageOptions {
+export interface FetchMessageOptions {
   system?: string;
   model: string;
   messages: InputMessage[];
   tools?: Tool[];
-  observation: Observation;
+  observation?: Observation;
   name?: string;
   maxTokens: number;
 }

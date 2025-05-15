@@ -4,12 +4,12 @@ import z from 'zod';
 import { Agent } from '../../src/Agent.js';
 import { Observation } from '../../src/Observation.js';
 import { zodToJsonSchema } from '../../src/utils.js';
-import { getProvider, mockWeatherAgent } from '../utils.js';
-const provider = getProvider();
-
-const model = 'gpt-4o';
+import { getModelInfo, mockWeatherAgent } from '../utils.js';
 
 describe('Agent', () => {
+  const { provider } = getModelInfo('openai');
+  const model = 'gpt-4o-mini';
+
   it('should be defined', () => {
     expect(Agent).toBeDefined();
   });
@@ -24,7 +24,7 @@ describe('Agent', () => {
     expect(response).toBeDefined();
   });
 
-  it('should be able to get a response', async () => {
+  it('should be able to get a response with %s', async () => {
     const agent = new Agent({
       instructions:
         'You are a friendly assistant that helps users with daily tasks.',
@@ -35,36 +35,39 @@ describe('Agent', () => {
       ],
       model,
       provider,
-      maxTokens: 5000,
+      maxTokensPerTurn: 5000,
     });
     expect(response).toBeDefined();
     expect(response.output_text).toEqual('Hello world!');
   }, 10000);
 
-  it('should be able to get a response with a tool', async () => {
+  it('should be able to get a response with a tool with %s', async () => {
     const response = await mockWeatherAgent.getResponse({
       messages: [{ role: 'user', content: 'What is the weather in Tokyo?' }],
       model,
       provider,
-      maxTokens: 5000,
+      maxTokensPerTurn: 5000,
     });
     expect(response).toBeDefined();
     expect(response.output_text).toContain('Tokyo');
     expect(response.output_text).toContain('20');
   }, 10000);
 
-  it('should be able to get a response with a tool and a json schema', async () => {
+  it('should be able to get a response with a tool and a json schema with %s', async () => {
     const responseSchema = z.object({
       degreesCelsius: z.number(),
     });
     const response = await mockWeatherAgent.getResponse({
       messages: [
-        { role: 'user', content: 'What is the weathder in Tokyo in Celsius?' },
+        {
+          role: 'user',
+          content: 'What is the weather in Tokyo in Celsius?',
+        },
       ],
       model,
       provider,
       jsonSchema: zodToJsonSchema(responseSchema),
-      maxTokens: 10000,
+      maxTokensPerTurn: 5000,
       maxTurns: 10,
     });
 
@@ -84,13 +87,14 @@ describe('Agent', () => {
       messages: [
         {
           role: 'user',
-          content: 'Say "Hello world!" exactly, with no other commentary.',
+          content: 'Say "Hello world!" exactly.',
         },
       ],
       model,
       provider,
       observation,
-      maxTokens: 1000,
+      maxTokensPerTurn: 1000,
+      maxTurns: 1,
     });
     expect(response).toBeDefined();
     expect(response.output_text).toEqual('Hello world!');

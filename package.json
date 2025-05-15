@@ -1,6 +1,6 @@
 {
   "name": "@plucky-ai/agent",
-  "version": "0.0.1-alpha.36",
+  "version": "0.0.1-alpha.45",
   "description": "Plucky's AI agentic framework.",
   "type": "module",
   "engines": {
@@ -11,16 +11,16 @@
   "module": "dist/index.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js",
       "require": "./dist/index.js",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./utils": {
-      "types": "./dist/utils.d.ts",
-      "default": "./dist/utils.js",
       "require": "./dist/utils.js",
-      "import": "./dist/utils.js"
+      "import": "./dist/utils.js",
+      "types": "./dist/utils.d.ts",
+      "default": "./dist/utils.js"
     }
   },
   "devDependencies": {
@@ -60,6 +60,7 @@
   "license": "MIT",
   "dependencies": {
     "@anthropic-ai/bedrock-sdk": "^0.12.6",
+    "@azure/openai": "^2.0.0",
     "ajv": "^8.17.1",
     "dotenv": "^16.5.0",
     "langfuse": "^3.37.2",

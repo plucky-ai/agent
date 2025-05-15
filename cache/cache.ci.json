@@ -1,5 +1,5 @@
 {
-  "563156c3a54e53dddbd1a55df8d88afef312e9cc78374514459049aa311b5d8c": {
+  "bfe8c27ff2673effed65b84947221ce96cb08b424c65b0ec237247114fa2f748": {
     "role": "assistant",
     "type": "message",
     "content": [
@@ -10,7 +10,7 @@
     ],
     "tokens_used": 20
   },
-  "3642a5221db69818e3b952129104012eb055697d30012d779e37bab451f3538b": {
+  "828d05cb999e7d74b00c5ef27c1555922a7db473facd783e652ad429df956f12": {
     "role": "assistant",
     "type": "message",
     "content": [
@@ -21,13 +21,13 @@
     ],
     "tokens_used": 73
   },
-  "af400190aa550446ae98e19a4b11c589556f99ac48b484f51d396dd443d8a379": {
+  "ff8b7ef0b07f3b5c2db5959ae3339494e6166e6e7dece812cca38fdc8689f95d": {
     "role": "assistant",
     "type": "message",
     "content": [
       {
         "type": "tool_use",
-        "id": "call_XvyAciH2rdVcQQ9fiBAp3Rxg",
+        "id": "call_jlMTg7Lb03XsDbCLAC0bTp9Q",
         "name": "get_current_weather",
         "input": {
           "location": "Tokyo"
@@ -36,44 +36,44 @@
     ],
     "tokens_used": 117
   },
-  "a073cb4482b642160eac98dbac7649bd9aa6f9b633aae8139059cdafb92ab8f9": {
+  "c10b0d8dcb2bf898c241b3f3dc8fc2d78d93ae31030b3ae767b94b14b314c2f1": {
     "role": "assistant",
     "type": "message",
     "content": [
       {
         "type": "text",
-        "text": "The current temperature in Tokyo is 20°C."
+        "text": "The current weather in Tokyo is 20 degrees Celsius."
       }
     ],
-    "tokens_used": 146
+    "tokens_used": 147
   },
-  "33aa7c8e7ab0751747daa035e08a4427f7b3ae643e7f1583ff0725353a245433": {
+  "2571a898c10b972660a42f02d64e549c66b508c506753ba2d386f012e4a17e61": {
     "role": "assistant",
     "type": "message",
     "content": [
       {
         "type": "tool_use",
-        "id": "call_UAdDpvTvXRjXbGpVrC1Jb32M",
+        "id": "call_IPTrrxmDvKik0HsmxEeEf5KD",
         "name": "get_current_weather",
         "input": {
           "location": "Tokyo"
         }
       }
     ],
-    "tokens_used": 206
+    "tokens_used": 204
   },
-  "5e696db43bdb7248ad8383f3620ba2d5b1f458c5cdf3fe1870e1b80615e7ab27": {
+  "e052a787598c7f1c67b29a4e09c7d20812c85e7da10741c322c82154ffb35f2f": {
     "role": "assistant",
     "type": "message",
     "content": [
       {
         "type": "text",
-        "text": "```json\n{\n  \"degreesCelsius\": 20\n}\n```"
+        "text": "{\n  \"degreesCelsius\": 20\n}"
       }
     ],
-    "tokens_used": 240
+    "tokens_used": 234
   },
-  "305249db7914d9c476db5572e1d1689f59dc5f73894961e3fa06bede837113c0": {
+  "27618930b6562b2e9e2c4cbaac3bf7feae027c3c3460ffa10ce8044fe2a77e4c": {
     "role": "assistant",
     "type": "message",
     "content": [
@@ -82,6 +82,113 @@
         "text": "Hello world!"
       }
     ],
-    "tokens_used": 72
+    "tokens_used": 67
+  },
+  "e357895f5b7c14eb5c043ea20a6b137d752aea5b8199af4c47261250a1f42e15": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "Hello world!"
+      }
+    ],
+    "tokens_used": 35
+  },
+  "98f0e6bd5f50db2ef6f347ee854ff6ca753a2e4c07eb731c23910a614f0b59ba": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "tool_use",
+        "id": "call_0DmxdDEVzrOUwkSn2mYEWHqx",
+        "name": "get_current_weather",
+        "input": {
+          "location": "Tokyo"
+        }
+      }
+    ],
+    "tokens_used": 78
+  },
+  "c96429fe7e7401623e993c4852c8a61a8e47b52ddf8f7b3ef7e6914a600c97e3": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "The weather in Tokyo is currently 20 degrees Celsius."
+      }
+    ],
+    "tokens_used": 109
+  },
+  "a9cf61d439c74d4a17c3d4142d92abc58d46f29510bfe4d92faf70066ad873c8": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "tool_use",
+        "id": "call_sZrwJ9Z8bIFSNomHvmg30c2a",
+        "name": "get_current_weather",
+        "input": {
+          "location": "Tokyo"
+        }
+      }
+    ],
+    "tokens_used": 81
+  },
+  "c6e45c8a2ff8ec6f15830b4a13d4e1cfca9cf43d419c5c241ed54091f7048eb0": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "The weather in Tokyo is currently 20 degrees Celsius."
+      }
+    ],
+    "tokens_used": 110
+  },
+  "9993f15f3dd18437358e0dead31e6424e077635310858af8ddf89d406d838ae9": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "It seems there was a misunderstanding. The conversation you provided isn't structured as a proper JSON response, which is likely why you're encountering errors. If you're looking for a JSON representation of the weather information I provided, it could be formatted like this:\n\n```json\n{\n  \"weather\": {\n    \"location\": \"Tokyo\",\n    \"temperature\": 20,\n    \"unit\": \"Celsius\"\n  }\n}\n```\n\nThis format encapsulates the weather data in a valid JSON structure. If you need further adjustments or more information, let me know!"
+      }
+    ],
+    "tokens_used": 449
+  },
+  "53a6d605623f8dacb99bd6e2048ab215d190157ccbfafb167633be21e52f95ab": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "It seems like there is a requirement for a specific JSON structure that includes a property called `degreesCelsius`. Here's a corrected JSON response that includes that property:\n\n```json\n{\n  \"weather\": {\n    \"location\": \"Tokyo\",\n    \"degreesCelsius\": 20\n  }\n}\n```\n\nThis structure includes the necessary `degreesCelsius` property. Let me know if you need further modifications!"
+      }
+    ],
+    "tokens_used": 463
+  },
+  "50103b6bd35b829955df8cd72ce2c3ca65632795f80ede6d58b7e2a0bdfdd12a": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "Hello world!"
+      }
+    ],
+    "tokens_used": 35
+  },
+  "8052165840a076f0464881d9d9a45868fc402c01358ae57bbfea5220c06d0337": {
+    "role": "assistant",
+    "type": "message",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"degreesCelsius\": 20\n}"
+      }
+    ],
+    "tokens_used": 435
   }
 }

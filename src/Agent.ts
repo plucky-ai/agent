@@ -25,16 +25,24 @@ export class Agent {
     provider: BaseProvider;
     model: string;
     jsonSchema?: unknown;
-    maxTokens: number;
+    maxTokens?: number;
     maxTurns?: number;
+    maxTokensPerTurn: number;
   }): Promise<Response> {
-    const { messages, jsonSchema, provider, model, maxTokens } = options;
+    const {
+      messages,
+      jsonSchema,
+      provider,
+      model,
+      maxTokens,
+      maxTokensPerTurn,
+    } = options;
     const observation = options.observation ?? new Observation();
     const outputMessages: OutputMessage[] = [];
     const maxTurns = options.maxTurns ?? 5;
     let turns = 0;
     let tokens = 0;
-    let systemMessage = this.instructions;
+    let systemMessage = this.instructions || '';
     if (jsonSchema) {
       systemMessage += `
 In your final message, you must return only a JSON object that matches the below schema with no other commentary.
@@ -49,7 +57,7 @@ ${JSON.stringify(jsonSchema, null, 2)}
         console.log('Max turns reached.');
         break;
       }
-      if (tokens >= maxTokens) {
+      if (maxTokens && tokens >= maxTokens) {
         console.log('Max tokens reached.');
         break;
       }
@@ -72,7 +80,9 @@ ${JSON.stringify(jsonSchema, null, 2)}
         model,
         messages: allMessages,
         observation,
-        maxTokens: maxTokens - tokens,
+        maxTokens: maxTokens
+          ? Math.max(maxTokensPerTurn, maxTokens - tokens)
+          : maxTokensPerTurn,
         tools: this.tools,
         name: `turn-${turns}`,
       });
@@ -106,8 +116,8 @@ ${JSON.stringify(jsonSchema, null, 2)}
       });
       const { output: validationOutput, output_text } =
         await validator.validate({
-          instructions: this.instructions ?? '',
-          input: JSON.stringify(messages),
+          instructions: systemMessage,
+          input: JSON.stringify(messages.concat(outputMessages), null, 2),
           result: selectLastText(
             outputMessages.map((m) => ({
               role: m.role,
@@ -159,11 +169,14 @@ ${JSON.stringify(jsonSchema, null, 2)}
 }
 
 function getBudgetMessage(options: {
-  maxTokens: number;
+  maxTokens?: number;
   maxTurns: number;
   tokens: number;
   turns: number;
 }): string {
   const { maxTokens, maxTurns, tokens, turns } = options;
-  return `You have used ${tokens} tokens and ${turns} turns to provide a response. You have ${maxTokens - tokens} tokens and ${maxTurns - turns} turns remaining.`;
+  if (maxTokens) {
+    return `You have used ${tokens} tokens and ${turns} turns to provide a response. You have ${maxTokens - tokens} tokens and ${maxTurns - turns} turns remaining.`;
+  }
+  return `You have used ${turns} turns to provide a response. You have ${maxTurns - turns} turns remaining.`;
 }

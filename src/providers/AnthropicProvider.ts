@@ -8,23 +8,13 @@ import { LocalCache } from '../LocalCache.js';
 import { FetchMessageOptions, OutputMessage } from '../types.js';
 import { BaseProvider } from './BaseProvider.js';
 
-export interface AWSAnthropicClientOptions
-  extends Omit<ClientOptions, 'apiKey'> {
-  awsAccessKey: string;
-  awsSecretKey: string;
-  awsRegion: string;
-}
-
-export class AWSAnthropicProvider extends BaseProvider {
+export class AnthropicProvider extends BaseProvider {
   private readonly anthropic: AnthropicBedrock;
-  constructor(options: {
-    clientOptions: AWSAnthropicClientOptions;
-    cache?: LocalCache;
-  }) {
+  constructor(options: { cache?: LocalCache; clientOptions: ClientOptions }) {
     super({
       cache: options.cache,
     });
-    this.anthropic = new AnthropicBedrock(options.clientOptions);
+    this.anthropic = new Anthropic(options.clientOptions);
   }
 
   async fetchRawMessage(options: FetchMessageOptions): Promise<OutputMessage> {
@@ -32,7 +22,7 @@ export class AWSAnthropicProvider extends BaseProvider {
       system: options.system,
       model: options.model,
       messages: options.messages as MessageCreateParams['messages'],
-      max_tokens: Math.min(options.maxTokens, 8000),
+      max_tokens: options.maxTokens,
       tools: options.tools?.map((tool) => ({
         name: tool.name,
         description: tool.description,
