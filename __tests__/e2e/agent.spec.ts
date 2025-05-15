@@ -93,7 +93,8 @@ describe('Agent', () => {
       model,
       provider,
       observation,
-      maxTokens: 1000,
+      maxTokensPerTurn: 1000,
+      maxTurns: 1,
     });
     expect(response).toBeDefined();
     expect(response.output_text).toEqual('Hello world!');

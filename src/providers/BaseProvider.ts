@@ -1,6 +1,6 @@
 import { LocalCache } from '../LocalCache.js';
 import { Observation } from '../Observation.js';
-import { FetchRawMessageOptions, OutputMessage } from '../types.js';
+import { FetchMessageOptions, OutputMessage } from '../types.js';
 
 export class BaseProvider {
   public readonly cache: LocalCache | null;
@@ -11,9 +11,17 @@ export class BaseProvider {
     this.version = options.version ?? '0'; // Invalidates caching for fetchRawMessage
   }
 
-  async fetchMessage(options: FetchRawMessageOptions): Promise<OutputMessage> {
+  async fetchMessage(options: FetchMessageOptions): Promise<OutputMessage> {
     const observation = options.observation ?? new Observation();
-    const { system, model, messages, tools, name, maxTokens } = options;
+    const {
+      system,
+      model,
+      messages,
+      tools,
+      name,
+      maxTokens,
+      maxTokensPerTurn,
+    } = options;
     const cacheKey = {
       version: this.version,
       system,
@@ -22,6 +30,7 @@ export class BaseProvider {
       tools: tools?.map((tool) => tool.toCacheKey()),
       name,
       maxTokens,
+      maxTokensPerTurn,
     };
     const tracedMessages: unknown[] = options.messages.concat([]);
     if (options.system) {
@@ -34,7 +43,7 @@ export class BaseProvider {
       input: tracedMessages,
       model: options.model,
       modelParameters: {
-        maxTokens: options.maxTokens,
+        maxTokens: options.maxTokensPerTurn,
       },
       name: options.name,
     });
@@ -58,9 +67,7 @@ export class BaseProvider {
     }
     return response;
   }
-  async fetchRawMessage(
-    _options: FetchRawMessageOptions,
-  ): Promise<OutputMessage> {
+  async fetchRawMessage(_options: FetchMessageOptions): Promise<OutputMessage> {
     throw new Error('Not implemented');
   }
 }

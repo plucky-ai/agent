@@ -91,7 +91,7 @@ export type ToolCallContext = {
   observation: Observation;
 };
 
-export interface FetchRawMessageOptions {
+export interface FetchMessageOptions {
   system?: string;
   model: string;
   messages: InputMessage[];
@@ -99,4 +99,5 @@ export interface FetchRawMessageOptions {
   observation?: Observation;
   name?: string;
   maxTokens: number;
+  maxTokensPerTurn?: number;
 }

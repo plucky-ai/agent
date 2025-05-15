@@ -3,7 +3,7 @@ import { ChatCompletionMessageParam } from 'openai/resources.js';
 import { LocalCache } from '../LocalCache.js';
 import {
   ContentBlock,
-  FetchRawMessageOptions,
+  FetchMessageOptions,
   InputMessage,
   OutputMessage,
 } from '../types.js';
@@ -28,9 +28,7 @@ export class AzureOpenAIProvider extends BaseProvider {
       deployment: options.deployment,
     });
   }
-  async fetchRawMessage(
-    options: FetchRawMessageOptions,
-  ): Promise<OutputMessage> {
+  async fetchRawMessage(options: FetchMessageOptions): Promise<OutputMessage> {
     function constructMessage(
       message: InputMessage,
     ): ChatCompletionMessageParam {

@@ -5,7 +5,7 @@ import type {
   Tool,
 } from '@anthropic-ai/sdk/resources/messages';
 import { LocalCache } from '../LocalCache.js';
-import { FetchRawMessageOptions, OutputMessage } from '../types.js';
+import { FetchMessageOptions, OutputMessage } from '../types.js';
 import { BaseProvider } from './BaseProvider.js';
 
 export class AWSAnthropicProvider extends BaseProvider {
@@ -26,9 +26,7 @@ export class AWSAnthropicProvider extends BaseProvider {
     });
   }
 
-  async fetchRawMessage(
-    options: FetchRawMessageOptions,
-  ): Promise<OutputMessage> {
+  async fetchRawMessage(options: FetchMessageOptions): Promise<OutputMessage> {
     const args: MessageCreateParams = {
       system: options.system,
       model: options.model,
